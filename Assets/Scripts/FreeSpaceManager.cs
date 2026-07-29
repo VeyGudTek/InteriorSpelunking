@@ -50,22 +50,30 @@ public class FreeSpaceManager : MonoBehaviour
         return SplitSpace(colliders[0].transform, spaceTransform);
     }
 
-    //Wait this isn't correct at all
     private List<GameObject> SplitSpace(Transform collision, Transform original)
     {
-        (float originalLeft, float originalRight, float _, float _) = original.GetBounds();
+        (float originalLeft, float originalRight, float originalForward, float originalBack) = original.GetBounds();
         (float left, float right, float _, float _) = collision.GetBounds();
 
         List<GameObject> newFreeSpaces = new();
 
+        float clampedLeft = originalLeft;
+        float clampedRight = originalRight;
         if (left > originalLeft)
         {
-            newFreeSpaces.AddRange(SplitSpaceVertical(collision, original, originalLeft, left));
+            (Vector3 center, Vector3 size) = VectorExtensions.ConvertToVector(originalLeft, left, originalForward, originalBack);
+            newFreeSpaces.Add(CreateFreeSpace(center, size));
+            clampedLeft = left;
         }
         if (right < originalRight)
         {
-            newFreeSpaces.AddRange(SplitSpaceVertical(collision, original, right, originalRight));
+            (Vector3 center, Vector3 size) = VectorExtensions.ConvertToVector(right, originalRight, originalForward, originalBack);
+            newFreeSpaces.Add(CreateFreeSpace(center, size));
+            clampedRight = right;
         }
+
+        newFreeSpaces.AddRange(SplitSpaceVertical(collision, original, clampedLeft, clampedRight));
+
         return newFreeSpaces;
     }
 
