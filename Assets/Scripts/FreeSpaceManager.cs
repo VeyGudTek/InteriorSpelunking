@@ -39,7 +39,7 @@ public class FreeSpaceManager : MonoBehaviour
 
         if (colliders.Length == 0)
         {
-            return new();
+            return new() { CreateFreeSpace(center, size) };
         }
 
         if (colliders.Length > 1)

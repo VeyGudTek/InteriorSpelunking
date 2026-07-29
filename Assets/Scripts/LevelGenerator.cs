@@ -11,7 +11,7 @@ public class LevelGenerator : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField]
-    private int TotalRooms = 3;
+    private int TotalRooms = 5;
     [SerializeField]
     private float PlayingAreaLength = 100f;
 
@@ -34,7 +34,7 @@ public class LevelGenerator : MonoBehaviour
     {
         Vector3 randomPoint = FreeSpaceManager.GetRandomPoint();
 
-        Vector3 roomSize = new Vector3(Random.Range(5f, 15f), 1f, Random.Range(5f, 15f));
+        Vector3 roomSize = new(Random.Range(5f, 15f), 1f, Random.Range(5f, 15f));
 
         GameObject newRoomObject = Instantiate(Room);
         Room newRoom = newRoomObject.GetComponent<Room>();
