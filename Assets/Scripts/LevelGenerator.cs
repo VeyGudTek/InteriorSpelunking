@@ -8,13 +8,19 @@ public class LevelGenerator : MonoBehaviour
     private GameObject Room;
     [SerializeField]
     private FreeSpaceManager FreeSpaceManager;
+    [SerializeField]
+    private Transform RoomParent;
 
     [Header("Settings")]
     [SerializeField]
-    private int TotalRooms = 5;
+    private int MaxAttempts = 5;
     [SerializeField]
     private float PlayingAreaLength = 100f;
 
+    [Header("State")]
+    [SerializeField]
+    private int CurrentAttempts = 0;
+    [SerializeField]
     private List<Room> Rooms = new();
 
     private void Start()
@@ -24,21 +30,72 @@ public class LevelGenerator : MonoBehaviour
 
     private void Update()
     {
-        if (Rooms.Count < TotalRooms)
+        if (FreeSpaceManager.TotalArea <= 25f)
         {
-            GenerateRoom();
+            return;
+        }
+
+        if (CurrentAttempts < MaxAttempts)
+        {
+            float randomValue = Random.value;
+            if (randomValue < 0.25f || Rooms.Count == 0)
+            {
+                GenerateRandomRoom();
+            }
+            else
+            {
+                GenerateDuplicateRoom();
+            }
+
+            CurrentAttempts++;
         }
     }
 
-    private void GenerateRoom()
+    private void GenerateDuplicateRoom()
+    {
+        Room randomRoom = Rooms[Random.Range(0, Rooms.Count)];
+
+        Vector3 randomOffset;
+        int randomDirection = Random.Range(0, 4);
+        switch (randomDirection)
+        {
+            case 0:
+                randomOffset = new(randomRoom.Length, 0f, 0f);
+                break;
+            case 1:
+                randomOffset = new(-randomRoom.Length, 0f, 0f);
+                break;
+            case 2:
+                randomOffset = new(0f, 0f, randomRoom.Width);
+                break;
+            case 3:
+                randomOffset = new(0f, 0f, -randomRoom.Width);
+                break;
+            default:
+                throw new System.ArgumentOutOfRangeException("Random Direction Surpassed 3.");
+        }
+
+        Vector3 newCenter = randomRoom.Center + randomOffset;
+        int layerMask = LayerMask.GetMask(Layers.Obstacle);
+        if (!Physics.CheckSphere(newCenter, Floats.CollisionPointRadius, layerMask))
+        {
+            GenerateRoom(newCenter, randomRoom.Size);
+        }
+    }
+
+    private void GenerateRandomRoom()
     {
         Vector3 randomPoint = FreeSpaceManager.GetRandomPoint();
-
         Vector3 roomSize = new(Random.Range(5f, 15f), 1f, Random.Range(5f, 15f));
 
-        GameObject newRoomObject = Instantiate(Room);
+        GenerateRoom(randomPoint, roomSize);
+    }
+
+    private void GenerateRoom(Vector3 center, Vector3 size)
+    {
+        GameObject newRoomObject = Instantiate(Room, RoomParent);
         Room newRoom = newRoomObject.GetComponent<Room>();
-        newRoom.Initialize(randomPoint, roomSize);
+        newRoom.Initialize(center, size);
 
         Rooms.Add(newRoom);
 

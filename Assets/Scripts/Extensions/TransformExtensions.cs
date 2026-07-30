@@ -6,4 +6,9 @@ public static class TransformExtensions
     {
         return VectorExtensions.GetBounds(transform.position, transform.localScale);
     }
+
+    public static float GetArea(this Transform transform)
+    {
+        return transform.localScale.x * transform.localScale.z;
+    }
 }

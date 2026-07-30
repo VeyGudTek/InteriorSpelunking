@@ -9,9 +9,18 @@ public class FreeSpaceManager : MonoBehaviour
 
     private List<GameObject> FreeSpaces = new();
 
+    public float TotalArea => FreeSpaces.Sum(fs => fs.transform.localScale.GetArea());
+
     public void InitializeFreeSpace(Vector3 center, Vector3 size)
     {
-        FreeSpaces.Add(CreateFreeSpace(center, size));
+        if (TryCreateFreeSpace(center, size, out GameObject freeSpace))
+        {
+            FreeSpaces.Add(freeSpace);
+        }
+        else
+        {
+            throw new System.InvalidOperationException("Initial free space is too small.");
+        }
     }
 
     public void UpdateSpaces()
@@ -39,7 +48,14 @@ public class FreeSpaceManager : MonoBehaviour
 
         if (colliders.Length == 0)
         {
-            return new() { CreateFreeSpace(center, size) };
+            if (TryCreateFreeSpace(center, size, out GameObject freeSpace))
+            {
+                return new() { freeSpace };
+            }
+            else
+            {
+                throw new System.InvalidOperationException("Failed to create existing space.");
+            }
         }
 
         if (colliders.Length > 1)
@@ -62,13 +78,19 @@ public class FreeSpaceManager : MonoBehaviour
         if (left > originalLeft)
         {
             (Vector3 center, Vector3 size) = VectorExtensions.ConvertToVector(originalLeft, left, originalForward, originalBack);
-            newFreeSpaces.Add(CreateFreeSpace(center, size));
+            if (TryCreateFreeSpace(center, size, out GameObject freeSpace))
+            {
+                newFreeSpaces.Add(freeSpace);
+            }
             clampedLeft = left;
         }
         if (right < originalRight)
         {
             (Vector3 center, Vector3 size) = VectorExtensions.ConvertToVector(right, originalRight, originalForward, originalBack);
-            newFreeSpaces.Add(CreateFreeSpace(center, size));
+            if (TryCreateFreeSpace(center, size, out GameObject freeSpace))
+            {
+                newFreeSpaces.Add(freeSpace);
+            }
             clampedRight = right;
         }
 
@@ -88,34 +110,45 @@ public class FreeSpaceManager : MonoBehaviour
         {
             (Vector3 center, Vector3 size) = VectorExtensions.ConvertToVector(newLeft, newRight, originalForward, forward);
 
-            newFreeSpaces.Add(CreateFreeSpace(center, size));
+            if (TryCreateFreeSpace(center, size, out GameObject freeSpace))
+            {
+                newFreeSpaces.Add(freeSpace);
+            }
         }
         if (back > originalBack)
         {
             (Vector3 center, Vector3 size) = VectorExtensions.ConvertToVector(newLeft, newRight, back, originalBack);
 
-            newFreeSpaces.Add(CreateFreeSpace(center, size));
+            if (TryCreateFreeSpace(center, size, out GameObject freeSpace))
+            {
+                newFreeSpaces.Add(freeSpace);
+            }
         }
 
         return newFreeSpaces;
     }
 
-    private GameObject CreateFreeSpace(Vector3 center, Vector3 size)
+    private bool TryCreateFreeSpace(Vector3 center, Vector3 size, out GameObject freeSpace)
     {
-        GameObject newFreeSpace = Instantiate(FreeSpacePrefab, center, Quaternion.identity);
-        newFreeSpace.transform.localScale = size;
-        newFreeSpace.transform.SetParent(transform);
+        freeSpace = null;
+
+        if (size.GetArea() < Floats.MinimumFreeSpaceArea)
+        {
+            return false;
+        }
+
+        freeSpace = Instantiate(FreeSpacePrefab, center, Quaternion.identity);
+        freeSpace.transform.localScale = size;
+        freeSpace.transform.SetParent(transform);
 
         Physics.SyncTransforms();
 
-        return newFreeSpace;
+        return true;
     }
 
     public Vector3 GetRandomPoint()
     {
-        float totalArea = FreeSpaces.Sum(fs => fs.transform.localScale.GetArea());
-        float randomThreshold = Random.Range(0f, totalArea);
-
+        float randomThreshold = Random.Range(0f, TotalArea);
         float cumulativeArea = 0f;
 
         foreach(GameObject freeSpace in FreeSpaces)

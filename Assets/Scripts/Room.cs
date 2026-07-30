@@ -14,10 +14,10 @@ public class Room : MonoBehaviour
 
     private float CenterX => (LeftBound + RightBound) / 2f;
     private float CenterY => (ForwardBound + BackwardBound) / 2f;
-    private Vector3 Center => new(CenterX, 0f, CenterY);
-    private float Length => RightBound - LeftBound;
-    private float Width => ForwardBound - BackwardBound;
-    private Vector3 Size => new(Length, 1f, Width);
+    public Vector3 Center => new(CenterX, 0f, CenterY);
+    public float Length => RightBound - LeftBound;
+    public float Width => ForwardBound - BackwardBound;
+    public Vector3 Size => new(Length, 1f, Width);
 
     public void Initialize(Vector3 center, Vector3 size)
     {
