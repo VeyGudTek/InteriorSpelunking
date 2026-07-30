@@ -36,6 +36,7 @@ public class Room : MonoBehaviour
         int layerMask = LayerMask.GetMask(Layers.Obstacle);
 
         int breaker = 0;
+        Vector3 originalCenter = Center;
         while (true)
         {
             breaker++;
@@ -53,27 +54,27 @@ public class Room : MonoBehaviour
                 break;
             }
 
-            ClampSingleBound(collidedRooms.First());
+            ClampSingleBound(collidedRooms.First(), originalCenter);
         }  
     }
 
-    private void ClampSingleBound(Room collidedRoom)
+    private void ClampSingleBound(Room collidedRoom, Vector3 originalCenter)
     {
         List<(Side side, float value)> possibleClamps = new();
 
-        if (collidedRoom.LeftBound > CenterX)
+        if (collidedRoom.LeftBound > originalCenter.x)
         {
             possibleClamps.Add((Side.Right, collidedRoom.LeftBound));
         }
-        if (collidedRoom.RightBound < CenterX)
+        if (collidedRoom.RightBound < originalCenter.x)
         {
             possibleClamps.Add((Side.Left, collidedRoom.RightBound));
         }
-        if (collidedRoom.ForwardBound < CenterY)
+        if (collidedRoom.ForwardBound < originalCenter.z)
         {
             possibleClamps.Add((Side.Back, collidedRoom.ForwardBound));
         }
-        if (collidedRoom.BackwardBound > CenterY)
+        if (collidedRoom.BackwardBound > originalCenter.z)
         {
             possibleClamps.Add((Side.Forward, collidedRoom.BackwardBound));
         }

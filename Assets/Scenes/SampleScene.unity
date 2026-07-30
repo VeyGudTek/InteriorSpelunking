@@ -509,7 +509,7 @@ MonoBehaviour:
   Room: {fileID: 4981271287407404960, guid: d420edc473b140f4991a603fd8e62f07, type: 3}
   FreeSpaceManager: {fileID: 782934741}
   RoomParent: {fileID: 1365943725}
-  MaxAttempts: 100
+  MaxAttempts: 150
   PlayingAreaLength: 100
   CurrentAttempts: 0
   Rooms: []
