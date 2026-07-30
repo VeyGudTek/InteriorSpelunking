@@ -37,8 +37,10 @@ public class LevelGenerator : MonoBehaviour
 
         if (CurrentAttempts < MaxAttempts)
         {
+            float availableAreaOffset = FreeSpaceManager.PercentageAvailable * 0.50f;
             float randomValue = Random.value;
-            if (randomValue < 0.25f || Rooms.Count == 0)
+
+            if (randomValue < 0.25f + availableAreaOffset || Rooms.Count == 0)
             {
                 GenerateRandomRoom();
             }

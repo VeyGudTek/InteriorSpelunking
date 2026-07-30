@@ -10,12 +10,15 @@ public class FreeSpaceManager : MonoBehaviour
     private List<GameObject> FreeSpaces = new();
 
     public float TotalArea => FreeSpaces.Sum(fs => fs.transform.localScale.GetArea());
+    private float InitialArea = 0f;
+    public float PercentageAvailable => TotalArea / InitialArea;
 
     public void InitializeFreeSpace(Vector3 center, Vector3 size)
     {
         if (TryCreateFreeSpace(center, size, out GameObject freeSpace))
         {
             FreeSpaces.Add(freeSpace);
+            InitialArea = TotalArea;
         }
         else
         {
