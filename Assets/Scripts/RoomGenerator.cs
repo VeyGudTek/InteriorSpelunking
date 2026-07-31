@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public class LevelGenerator : MonoBehaviour
+public class RoomGenerator : MonoBehaviour
 {
     [Header("References")]
     [SerializeField]
@@ -18,24 +19,39 @@ public class LevelGenerator : MonoBehaviour
     private float PlayingAreaLength = 100f;
 
     [Header("State")]
+    public GenerationState GenerationState = GenerationState.Waiting;
     [SerializeField]
     private int CurrentAttempts = 0;
     [SerializeField]
     private List<Room> Rooms = new();
 
-    private void Start()
+    public void StartRoomGeneration()
     {
         FreeSpaceManager.InitializeFreeSpace(Vector3.zero, Vector3.one * PlayingAreaLength);
+        GenerationState = GenerationState.Generating;
+    }
+
+    public List<Room> GetGeneratedRooms()
+    {
+        if (GenerationState != GenerationState.Completed)
+        {
+            throw new System.InvalidOperationException("Room generation is not completed yet.");
+        }
+
+        return Rooms.ToList();
     }
 
     private void Update()
     {
-        if (FreeSpaceManager.TotalArea <= 25f)
+        if (GenerationState == GenerationState.Generating)
         {
-            return;
+            TryGenerateRoom();
         }
+    }
 
-        if (CurrentAttempts < MaxAttempts)
+    private void TryGenerateRoom()
+    {
+        if (CurrentAttempts < MaxAttempts && FreeSpaceManager.TotalArea > 25f)
         {
             float availableAreaOffset = FreeSpaceManager.PercentageAvailable * 0.50f;
             float randomValue = Random.value;
@@ -50,6 +66,12 @@ public class LevelGenerator : MonoBehaviour
             }
 
             CurrentAttempts++;
+        }
+        else
+        {
+            GenerationState = GenerationState.Completed;
+            Destroy(FreeSpaceManager.gameObject);
+            FreeSpaceManager = null;
         }
     }
 

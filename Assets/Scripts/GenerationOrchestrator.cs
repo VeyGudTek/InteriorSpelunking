@@ -1,0 +1,56 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public class GenerationOrchestrator : MonoBehaviour
+{
+    private enum OrchestrationState
+    {
+        RoomLayout,
+        NeighborGeneration
+    }
+
+    [Header("References")]
+    [SerializeField]
+    private RoomGenerator RoomGenerator;
+
+    [Header("State")]
+    [SerializeField]
+    private OrchestrationState State = OrchestrationState.RoomLayout;
+    [SerializeField]
+    private List<Room> GeneratedRooms = new();
+
+    private void Update()
+    {
+        switch (State)
+        {
+            case OrchestrationState.RoomLayout:
+                ProcessRoomLayout();
+                break;
+            case OrchestrationState.NeighborGeneration:
+                ProcessNeighborGeneration();
+                break;
+            default:
+                throw new System.InvalidOperationException("Undefined Orchestration State");
+        }
+    }
+
+    private void ProcessRoomLayout()
+    {
+        if (RoomGenerator.GenerationState == GenerationState.Waiting)
+        {
+            RoomGenerator.StartRoomGeneration();
+            return;
+        }
+
+        if (RoomGenerator.GenerationState == GenerationState.Completed)
+        {
+            GeneratedRooms = RoomGenerator.GetGeneratedRooms();
+            State = OrchestrationState.NeighborGeneration;
+        }
+    }
+
+    private void ProcessNeighborGeneration()
+    {
+
+    }
+}
