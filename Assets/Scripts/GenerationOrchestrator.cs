@@ -6,7 +6,9 @@ public class GenerationOrchestrator : MonoBehaviour
     private enum OrchestrationState
     {
         RoomLayout,
-        NeighborGeneration
+        NeighborGeneration,
+        PathGeneration,
+        Finished
     }
 
     [Header("References")]
@@ -14,6 +16,8 @@ public class GenerationOrchestrator : MonoBehaviour
     private RoomGenerator RoomGenerator;
     [SerializeField]
     private NeighborGenerator NeighborGenerator;
+    [SerializeField]
+    private PathGenerator PathGenerator;
 
     [Header("State")]
     [SerializeField]
@@ -30,6 +34,12 @@ public class GenerationOrchestrator : MonoBehaviour
                 break;
             case OrchestrationState.NeighborGeneration:
                 ProcessNeighborGeneration();
+                break;
+            case OrchestrationState.PathGeneration:
+                ProcessPathGeneration();
+                break;
+            case OrchestrationState.Finished:
+                //Done
                 break;
             default:
                 throw new System.InvalidOperationException("Undefined Orchestration State");
@@ -60,7 +70,20 @@ public class GenerationOrchestrator : MonoBehaviour
         }
         if (NeighborGenerator.State == GenerationState.Completed)
         {
-            Debug.Log("Finished For Now");
+            State = OrchestrationState.PathGeneration;
+        }
+    }
+
+    private void ProcessPathGeneration()
+    {
+        if (PathGenerator.State == GenerationState.Waiting)
+        {
+            PathGenerator.StartPathGeneration(GeneratedRooms);
+            return;
+        }
+        if (PathGenerator.State == GenerationState.Completed)
+        {
+            State = OrchestrationState.Finished;
         }
     }
 }

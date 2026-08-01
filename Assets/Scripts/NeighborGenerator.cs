@@ -51,11 +51,11 @@ public class NeighborGenerator : MonoBehaviour
         {
             if (TryGetSharedSide(currentRoom, collidedRoom, out Side sharedSide))
             {
-                currentRoom.AddNeighbor(new()
+                currentRoom.Neighbors.Add(new()
                 {
                     OtherRoom = collidedRoom,
                     SharedSide = sharedSide,
-                    HasPassage = true
+                    HasPassage = false
                 });
             }
         }

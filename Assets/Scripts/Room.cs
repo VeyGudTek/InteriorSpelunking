@@ -8,13 +8,15 @@ public class Room : MonoBehaviour
     [SerializeField]
     private GameObject Obstacle;
 
-    [Header("State")]
+    [Header("Bounds")]
     public float LeftBound = 0f;
     public float RightBound = 0f;
     public float ForwardBound = 0f;
     public float BackwardBound = 0f;
-    [SerializeField]
-    private List<Neighbor> Neighbors = new();
+
+    [Header("Neighbor Information")]
+    public bool Visited = false;
+    public List<Neighbor> Neighbors = new();
 
     private float CenterX => (LeftBound + RightBound) / 2f;
     private float CenterY => (ForwardBound + BackwardBound) / 2f;
@@ -115,10 +117,5 @@ public class Room : MonoBehaviour
         Obstacle.transform.localScale = new Vector3(Length, 1f, Width);
 
         Physics.SyncTransforms();
-    }
-
-    public void AddNeighbor(Neighbor neighbor)
-    {
-        Neighbors.Add(neighbor);
     }
 }
