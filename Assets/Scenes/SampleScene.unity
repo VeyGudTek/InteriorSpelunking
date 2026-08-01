@@ -575,7 +575,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 782934740}
-  - {fileID: 1365943725}
   m_Father: {fileID: 1445382056}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1365943724
@@ -602,12 +601,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1365943724}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1269612554}
+  m_Father: {fileID: 1445382056}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1445382055
 GameObject:
@@ -639,6 +638,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1365943725}
   - {fileID: 1269612554}
   - {fileID: 267368079}
   m_Father: {fileID: 0}
@@ -656,6 +656,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GenerationOrchestrator
   RoomGenerator: {fileID: 1269612553}
+  NeighborGenerator: {fileID: 267368080}
   State: 0
   GeneratedRooms: []
 --- !u!1660057539 &9223372036854775807

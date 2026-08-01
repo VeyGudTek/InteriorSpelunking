@@ -12,6 +12,8 @@ public class GenerationOrchestrator : MonoBehaviour
     [Header("References")]
     [SerializeField]
     private RoomGenerator RoomGenerator;
+    [SerializeField]
+    private NeighborGenerator NeighborGenerator;
 
     [Header("State")]
     [SerializeField]
@@ -51,6 +53,14 @@ public class GenerationOrchestrator : MonoBehaviour
 
     private void ProcessNeighborGeneration()
     {
-
+        if (NeighborGenerator.State == GenerationState.Waiting)
+        {
+            NeighborGenerator.StartNeighborGeneration(GeneratedRooms);
+            return;
+        }
+        if (NeighborGenerator.State == GenerationState.Completed)
+        {
+            Debug.Log("Finished For Now");
+        }
     }
 }

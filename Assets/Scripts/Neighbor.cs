@@ -3,7 +3,7 @@
 [Serializable]
 public class Neighbor
 {
-    Room OtherRoom;
-    Side SharedSide;
-    bool HasPassage;
+    public Room OtherRoom;
+    public Side SharedSide;
+    public bool HasPassage;
 }

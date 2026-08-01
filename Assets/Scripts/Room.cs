@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class Room : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField]
     private GameObject Obstacle;
 
-    private float LeftBound = 0f;
-    private float RightBound = 0f;
-    private float ForwardBound = 0f;
-    private float BackwardBound = 0f;
+    [Header("State")]
+    public float LeftBound = 0f;
+    public float RightBound = 0f;
+    public float ForwardBound = 0f;
+    public float BackwardBound = 0f;
+    [SerializeField]
+    private List<Neighbor> Neighbors = new();
 
     private float CenterX => (LeftBound + RightBound) / 2f;
     private float CenterY => (ForwardBound + BackwardBound) / 2f;
@@ -111,5 +115,10 @@ public class Room : MonoBehaviour
         Obstacle.transform.localScale = new Vector3(Length, 1f, Width);
 
         Physics.SyncTransforms();
+    }
+
+    public void AddNeighbor(Neighbor neighbor)
+    {
+        Neighbors.Add(neighbor);
     }
 }
