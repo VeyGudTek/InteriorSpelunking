@@ -17,6 +17,12 @@ public class RoomGenerator : MonoBehaviour
     private int MaxAttempts = 5;
     [SerializeField]
     private float PlayingAreaLength = 100f;
+    [SerializeField]
+    private float MaxRoomSize = 15f;
+    [SerializeField]
+    private float MinRoomSize = 5f;
+    [SerializeField]
+    private float RoomHeight = 3f;
 
     [Header("State")]
     public GenerationState GenerationState = GenerationState.Waiting;
@@ -24,10 +30,16 @@ public class RoomGenerator : MonoBehaviour
     private int CurrentAttempts = 0;
     [SerializeField]
     private List<Room> Rooms = new();
+    [SerializeField]
+    private float Level = 0f;
 
     public void StartRoomGeneration()
     {
-        FreeSpaceManager.InitializeFreeSpace(Vector3.zero, Vector3.one * PlayingAreaLength);
+        FreeSpaceManager.InitializeFreeSpace(
+            new Vector3(0f, Level, 0f), 
+            new Vector3(PlayingAreaLength, Floats.FreeSpaceHeight, PlayingAreaLength), 
+            Level
+        );
         GenerationState = GenerationState.Generating;
     }
 
@@ -110,7 +122,7 @@ public class RoomGenerator : MonoBehaviour
     private void GenerateRandomRoom()
     {
         Vector3 randomPoint = FreeSpaceManager.GetRandomPoint();
-        Vector3 roomSize = new(Random.Range(5f, 15f), 1f, Random.Range(5f, 15f));
+        Vector3 roomSize = new(Random.Range(MinRoomSize, MaxRoomSize), 1f, Random.Range(MinRoomSize, MaxRoomSize));
 
         GenerateRoom(randomPoint, roomSize);
     }
@@ -119,7 +131,7 @@ public class RoomGenerator : MonoBehaviour
     {
         GameObject newRoomObject = Instantiate(Room, RoomParent);
         Room newRoom = newRoomObject.GetComponent<Room>();
-        newRoom.Initialize(center, size);
+        newRoom.Initialize(center, size, RoomHeight, Level);
 
         Rooms.Add(newRoom);
 

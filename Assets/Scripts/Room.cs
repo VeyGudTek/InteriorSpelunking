@@ -10,11 +10,13 @@ public class Room : MonoBehaviour
     [SerializeField]
     private Walls Walls;
 
-    [Header("Bounds")]
+    [Header("Dimensions")]
     public float LeftBound = 0f;
     public float RightBound = 0f;
     public float ForwardBound = 0f;
     public float BackwardBound = 0f;
+    public float Height = 0f;
+    public float Level = 0f;
 
     [Header("Neighbor Information")]
     public bool Visited = false;
@@ -22,18 +24,20 @@ public class Room : MonoBehaviour
 
     private float CenterX => (LeftBound + RightBound) / 2f;
     private float CenterY => (ForwardBound + BackwardBound) / 2f;
-    public Vector3 Center => new(CenterX, 0f, CenterY);
+    public Vector3 Center => new(CenterX, Level, CenterY);
     public float Length => RightBound - LeftBound;
     public float Width => ForwardBound - BackwardBound;
-    public Vector3 Size => new(Length, 1f, Width);
+    public Vector3 Size => new(Length, Height, Width);
 
-    public void Initialize(Vector3 center, Vector3 size)
+    public void Initialize(Vector3 center, Vector3 size, float height, float level)
     {
         (float left, float right, float forward, float back) = VectorExtensions.GetBounds(center, size);
         LeftBound = left;
         RightBound = right;
         ForwardBound = forward;
         BackwardBound = back;
+        Height = height;
+        Level = level;
 
         ClampBounds();
         UpdateObstacle();
@@ -115,8 +119,8 @@ public class Room : MonoBehaviour
 
     private void UpdateObstacle()
     {
-        Obstacle.transform.position = new Vector3(CenterX, 0f, CenterY);
-        Obstacle.transform.localScale = new Vector3(Length, 1f, Width);
+        Obstacle.transform.position = new Vector3(CenterX, Level, CenterY);
+        Obstacle.transform.localScale = new Vector3(Length, Floats.FreeSpaceHeight, Width);
 
         Physics.SyncTransforms();
     }
