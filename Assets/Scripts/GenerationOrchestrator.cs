@@ -8,6 +8,7 @@ public class GenerationOrchestrator : MonoBehaviour
         RoomLayout,
         NeighborGeneration,
         PathGeneration,
+        WallGeneration,
         Finished
     }
 
@@ -18,6 +19,8 @@ public class GenerationOrchestrator : MonoBehaviour
     private NeighborGenerator NeighborGenerator;
     [SerializeField]
     private PathGenerator PathGenerator;
+    [SerializeField]
+    private WallGenerator WallGenerator;
 
     [Header("State")]
     [SerializeField]
@@ -37,6 +40,9 @@ public class GenerationOrchestrator : MonoBehaviour
                 break;
             case OrchestrationState.PathGeneration:
                 ProcessPathGeneration();
+                break;
+            case OrchestrationState.WallGeneration:
+                ProcessWallGeneration();
                 break;
             case OrchestrationState.Finished:
                 //Done
@@ -82,6 +88,19 @@ public class GenerationOrchestrator : MonoBehaviour
             return;
         }
         if (PathGenerator.State == GenerationState.Completed)
+        {
+            State = OrchestrationState.WallGeneration;
+        }
+    }
+
+    private void ProcessWallGeneration()
+    {
+        if (WallGenerator.State == GenerationState.Waiting)
+        {
+            WallGenerator.StartWallGeneration(GeneratedRooms);
+            return;
+        }
+        if (WallGenerator.State == GenerationState.Completed)
         {
             State = OrchestrationState.Finished;
         }

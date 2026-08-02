@@ -7,6 +7,8 @@ public class Room : MonoBehaviour
     [Header("References")]
     [SerializeField]
     private GameObject Obstacle;
+    [SerializeField]
+    private Walls Walls;
 
     [Header("Bounds")]
     public float LeftBound = 0f;
@@ -117,5 +119,10 @@ public class Room : MonoBehaviour
         Obstacle.transform.localScale = new Vector3(Length, 1f, Width);
 
         Physics.SyncTransforms();
+    }
+
+    public void GenerateWalls()
+    {
+        Walls.CreateWalls(LeftBound, RightBound, ForwardBound, BackwardBound, Neighbors);
     }
 }
