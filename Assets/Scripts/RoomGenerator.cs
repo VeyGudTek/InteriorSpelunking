@@ -91,25 +91,15 @@ public class RoomGenerator : MonoBehaviour
     {
         Room randomRoom = Rooms[Random.Range(0, Rooms.Count)];
 
-        Vector3 randomOffset;
         int randomDirection = Random.Range(0, 4);
-        switch (randomDirection)
+        Vector3 randomOffset = randomDirection switch
         {
-            case 0:
-                randomOffset = new(randomRoom.Length, 0f, 0f);
-                break;
-            case 1:
-                randomOffset = new(-randomRoom.Length, 0f, 0f);
-                break;
-            case 2:
-                randomOffset = new(0f, 0f, randomRoom.Width);
-                break;
-            case 3:
-                randomOffset = new(0f, 0f, -randomRoom.Width);
-                break;
-            default:
-                throw new System.ArgumentOutOfRangeException("Random Direction Surpassed 3.");
-        }
+            0 => new Vector3(randomRoom.Length, 0f, 0f),
+            1 => new Vector3(-randomRoom.Length, 0f, 0f),
+            2 => new Vector3(0f, 0f, randomRoom.Width),
+            3 => new Vector3(0f, 0f, -randomRoom.Width),
+            _ => throw new System.ArgumentOutOfRangeException("Random Direction Surpassed 3.")
+        };
 
         Vector3 newCenter = randomRoom.Center + randomOffset;
         int layerMask = LayerMask.GetMask(Layers.Obstacle);

@@ -7,7 +7,6 @@ public class Room : MonoBehaviour
     [Header("References")]
     [SerializeField]
     private GameObject Obstacle;
-    [SerializeField]
     public Walls Walls;
 
     [Header("Dimensions")]

@@ -87,18 +87,19 @@ public class Walls : MonoBehaviour
             return;
         }
 
-        float doorTop = Level + DoorHeight;
-        CreateDoorTop(neighbor.SharedSide, doorTop, wallStart, wallEnd);
+        CreateDoorTop(neighbor.SharedSide, wallStart, wallEnd);
 
         float randomDoorCenter = Random.Range(wallStart + (Floats.MinimumDoorWidth / 2f), wallEnd - (Floats.MinimumDoorWidth / 2f));
         float randomDoorWidth = Random.Range(Floats.MinimumDoorWidth, wallEnd - wallStart);
 
-        CreateDoorSides(neighbor.SharedSide, doorTop, randomDoorCenter, randomDoorWidth, wallStart, wallEnd);
+        CreateDoorSides(neighbor.SharedSide, randomDoorCenter, randomDoorWidth, wallStart, wallEnd);
     }
 
-    private void CreateDoorTop(Side sharedSide, float doorTop, float wallStart, float wallEnd)
+    private void CreateDoorTop(Side sharedSide, float wallStart, float wallEnd)
     {
+        float doorTop = Level + DoorHeight;
         float topBound = Level + Height;
+
         float wallCenterY = (doorTop + topBound) / 2f;
         float wallHeight = topBound - doorTop;
 
@@ -127,7 +128,7 @@ public class Walls : MonoBehaviour
         wall.transform.SetParent(transform);
     }
 
-    private void CreateDoorSides(Side sharedSide, float doorTop, float doorCenter, float doorWidth, float wallStart, float wallEnd)
+    private void CreateDoorSides(Side sharedSide, float doorCenter, float doorWidth, float wallStart, float wallEnd)
     {
         float doorMin = doorCenter - (doorWidth / 2f);
         float doorMax = doorCenter + (doorWidth / 2f);
