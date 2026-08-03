@@ -12,11 +12,13 @@ public class Walls : MonoBehaviour
     private float RightBound;
     private float ForwardBound;
     private float BackwardBound;
+    private float Height;
+    private float CenterY;
     private Dictionary<Side, List<(float, float)>> SolidWallsToCreate;
 
-    public void CreateWalls(float leftBound, float rightBound, float forwardBound, float backwardBound, List<Neighbor> neighbors)
+    public void CreateWalls(float leftBound, float rightBound, float forwardBound, float backwardBound, float height, float centerY, List<Neighbor> neighbors)
     {
-        AssignProperties(leftBound, rightBound, forwardBound, backwardBound);
+        AssignProperties(leftBound, rightBound, forwardBound, backwardBound, height, centerY);
         
         foreach (Neighbor neighbor in neighbors.Where(n => n.HasPassage))
         {
@@ -27,7 +29,7 @@ public class Walls : MonoBehaviour
         CreateSolidWalls();
     }
 
-    private void AssignProperties(float leftBound, float rightBound, float forwardBound, float backwardBound)
+    private void AssignProperties(float leftBound, float rightBound, float forwardBound, float backwardBound, float height, float centerY)
     {
         SolidWallsToCreate = new()
         {
@@ -41,6 +43,8 @@ public class Walls : MonoBehaviour
         RightBound = rightBound;
         ForwardBound = forwardBound;
         BackwardBound = backwardBound;
+        Height = height;
+        CenterY = centerY;
     }
 
     private void CreateDoorway()
@@ -104,18 +108,18 @@ public class Walls : MonoBehaviour
             {
                 Vector3 position = side switch
                 {
-                    Side.Left => new Vector3(LeftBound, 0, (end + start) / 2f),
-                    Side.Right => new Vector3(RightBound, 0, (end + start) / 2f),
-                    Side.Forward => new Vector3((end + start) / 2f, 0, ForwardBound),
-                    Side.Back => new Vector3((end + start) / 2f, 0, BackwardBound),
+                    Side.Left => new Vector3(LeftBound, CenterY, (end + start) / 2f),
+                    Side.Right => new Vector3(RightBound, CenterY, (end + start) / 2f),
+                    Side.Forward => new Vector3((end + start) / 2f, CenterY, ForwardBound),
+                    Side.Back => new Vector3((end + start) / 2f, CenterY, BackwardBound),
                     _ => throw new System.NotImplementedException()
                 };
                 Vector3 size = side switch
                 {
-                    Side.Left => new Vector3(Floats.WallThickness, 2f, end - start),
-                    Side.Right => new Vector3(Floats.WallThickness, 2f, end - start),
-                    Side.Forward => new Vector3(end - start, 2f, Floats.WallThickness),
-                    Side.Back => new Vector3(end - start, 2f, Floats.WallThickness),
+                    Side.Left => new Vector3(Floats.WallThickness, Height, end - start),
+                    Side.Right => new Vector3(Floats.WallThickness, Height, end - start),
+                    Side.Forward => new Vector3(end - start, Height, Floats.WallThickness),
+                    Side.Back => new Vector3(end - start, Height, Floats.WallThickness),
                     _ => throw new System.NotImplementedException()
                 };
 

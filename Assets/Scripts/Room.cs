@@ -23,8 +23,8 @@ public class Room : MonoBehaviour
     public List<Neighbor> Neighbors = new();
 
     private float CenterX => (LeftBound + RightBound) / 2f;
-    private float CenterY => (ForwardBound + BackwardBound) / 2f;
-    public Vector3 Center => new(CenterX, Level, CenterY);
+    private float CenterZ => (ForwardBound + BackwardBound) / 2f;
+    public Vector3 Center => new(CenterX, Level, CenterZ);
     public float Length => RightBound - LeftBound;
     public float Width => ForwardBound - BackwardBound;
     public Vector3 Size => new(Length, Height, Width);
@@ -119,7 +119,7 @@ public class Room : MonoBehaviour
 
     private void UpdateObstacle()
     {
-        Obstacle.transform.position = new Vector3(CenterX, Level, CenterY);
+        Obstacle.transform.position = new Vector3(CenterX, Level, CenterZ);
         Obstacle.transform.localScale = new Vector3(Length, Floats.FreeSpaceHeight, Width);
 
         Physics.SyncTransforms();
@@ -127,6 +127,6 @@ public class Room : MonoBehaviour
 
     public void GenerateWalls()
     {
-        Walls.CreateWalls(LeftBound, RightBound, ForwardBound, BackwardBound, Neighbors);
+        Walls.CreateWalls(LeftBound, RightBound, ForwardBound, BackwardBound, Height, Level + (Height / 2f), Neighbors);
     }
 }
