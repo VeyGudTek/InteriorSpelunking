@@ -14,6 +14,9 @@ public class Walls : MonoBehaviour
     [SerializeField]
     private float DoorHeight = 2f;
 
+    [Header("State")]
+    public bool HasCreatedWalls = false;
+
     private float LeftBound;
     private float RightBound;
     private float ForwardBound;
@@ -24,18 +27,25 @@ public class Walls : MonoBehaviour
 
     private Dictionary<Side, List<(float, float)>> SolidWallsToCreate;
 
-    //Check existence of wall before creation
     public void CreateWalls(float leftBound, float rightBound, float forwardBound, float backwardBound, float height, float level, List<Neighbor> neighbors)
     {
         AssignProperties(leftBound, rightBound, forwardBound, backwardBound, height, level);
         
-        foreach (Neighbor neighbor in neighbors.Where(n => n.HasPassage))
+        foreach (Neighbor neighbor in neighbors)
         {
-            CreateDoorway(neighbor);
-            PopulateSolidWalls(neighbor);
+            if (neighbor.HasPassage && !neighbor.OtherRoom.Walls.HasCreatedWalls)
+            {
+                CreateDoorway(neighbor);
+            }
+            if (neighbor.HasPassage || neighbor.OtherRoom.Walls.HasCreatedWalls)
+            {
+                ClampSolidWalls(neighbor);
+            }
         }
 
         CreateSolidWalls();
+
+        HasCreatedWalls = true;
     }
 
     private void AssignProperties(float leftBound, float rightBound, float forwardBound, float backwardBound, float height, float level)
@@ -174,7 +184,7 @@ public class Walls : MonoBehaviour
         }
     }
 
-    private void PopulateSolidWalls(Neighbor neighbor)
+    private void ClampSolidWalls(Neighbor neighbor)
     {
         Side sideToClamp = neighbor.SharedSide;
         List<(float, float)> existingAvailableEdges = SolidWallsToCreate[sideToClamp];

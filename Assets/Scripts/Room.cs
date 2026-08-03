@@ -8,7 +8,7 @@ public class Room : MonoBehaviour
     [SerializeField]
     private GameObject Obstacle;
     [SerializeField]
-    private Walls Walls;
+    public Walls Walls;
 
     [Header("Dimensions")]
     public float LeftBound = 0f;
