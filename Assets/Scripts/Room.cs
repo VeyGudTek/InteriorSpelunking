@@ -127,6 +127,6 @@ public class Room : MonoBehaviour
 
     public void GenerateWalls()
     {
-        Walls.CreateWalls(LeftBound, RightBound, ForwardBound, BackwardBound, Height, Level + (Height / 2f), Neighbors);
+        Walls.CreateWalls(LeftBound, RightBound, ForwardBound, BackwardBound, Height, Level, Neighbors);
     }
 }

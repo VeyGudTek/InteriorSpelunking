@@ -8,28 +8,37 @@ public class Walls : MonoBehaviour
     [SerializeField]
     private GameObject WallPrefab;
 
+    [Header("Settings")]
+    [SerializeField]
+    private float ChanceToCreateDoorway = 0.5f;
+    [SerializeField]
+    private float DoorHeight = 2f;
+
     private float LeftBound;
     private float RightBound;
     private float ForwardBound;
     private float BackwardBound;
     private float Height;
-    private float CenterY;
+    private float Level;
+    private float CenterY => Level + (Height / 2f);
+
     private Dictionary<Side, List<(float, float)>> SolidWallsToCreate;
 
-    public void CreateWalls(float leftBound, float rightBound, float forwardBound, float backwardBound, float height, float centerY, List<Neighbor> neighbors)
+    //Check existence of wall before creation
+    public void CreateWalls(float leftBound, float rightBound, float forwardBound, float backwardBound, float height, float level, List<Neighbor> neighbors)
     {
-        AssignProperties(leftBound, rightBound, forwardBound, backwardBound, height, centerY);
+        AssignProperties(leftBound, rightBound, forwardBound, backwardBound, height, level);
         
         foreach (Neighbor neighbor in neighbors.Where(n => n.HasPassage))
         {
-            CreateDoorway();
+            CreateDoorway(neighbor);
             PopulateSolidWalls(neighbor);
         }
 
         CreateSolidWalls();
     }
 
-    private void AssignProperties(float leftBound, float rightBound, float forwardBound, float backwardBound, float height, float centerY)
+    private void AssignProperties(float leftBound, float rightBound, float forwardBound, float backwardBound, float height, float level)
     {
         SolidWallsToCreate = new()
         {
@@ -44,12 +53,125 @@ public class Walls : MonoBehaviour
         ForwardBound = forwardBound;
         BackwardBound = backwardBound;
         Height = height;
-        CenterY = centerY;
+        Level = level;
     }
 
-    private void CreateDoorway()
+    private void CreateDoorway(Neighbor neighbor)
     {
-        //Skip this for now
+        if (Random.value > ChanceToCreateDoorway)
+        {
+            return;
+        }
+
+        bool isHorizontal = neighbor.SharedSide.IsHorizontal();
+
+        float edgeStart = isHorizontal ? BackwardBound : LeftBound;
+        float edgeEnd = isHorizontal ? ForwardBound : RightBound;
+        float neighborEdgeStart = isHorizontal ? neighbor.OtherRoom.BackwardBound : neighbor.OtherRoom.LeftBound;
+        float neighborEdgeEnd = isHorizontal ? neighbor.OtherRoom.ForwardBound : neighbor.OtherRoom.RightBound;
+
+        float wallStart = Mathf.Max(edgeStart, neighborEdgeStart);
+        float wallEnd = Mathf.Min(edgeEnd, neighborEdgeEnd);
+        if (Floats.MinimumDoorWidth > wallEnd - wallStart)
+        {
+            return;
+        }
+
+        float doorTop = Level + DoorHeight;
+        CreateDoorTop(neighbor.SharedSide, doorTop, wallStart, wallEnd);
+
+        float randomDoorCenter = Random.Range(wallStart + (Floats.MinimumDoorWidth / 2f), wallEnd - (Floats.MinimumDoorWidth / 2f));
+        float randomDoorWidth = Random.Range(Floats.MinimumDoorWidth, wallEnd - wallStart);
+
+        CreateDoorSides(neighbor.SharedSide, doorTop, randomDoorCenter, randomDoorWidth, wallStart, wallEnd);
+    }
+
+    private void CreateDoorTop(Side sharedSide, float doorTop, float wallStart, float wallEnd)
+    {
+        float topBound = Level + Height;
+        float wallCenterY = (doorTop + topBound) / 2f;
+        float wallHeight = topBound - doorTop;
+
+        float wallCenter = (wallStart + wallEnd) / 2f;
+        float wallLength = wallEnd - wallStart;
+
+        Vector3 position = sharedSide switch
+        {
+            Side.Left => new Vector3(LeftBound, wallCenterY, wallCenter),
+            Side.Right => new Vector3(RightBound, wallCenterY, wallCenter),
+            Side.Forward => new Vector3(wallCenter, wallCenterY, ForwardBound),
+            Side.Back => new Vector3(wallCenter, wallCenterY, BackwardBound),
+            _ => throw new System.NotImplementedException()
+        };
+        Vector3 size = sharedSide switch
+        {
+            Side.Left => new Vector3(Floats.WallThickness, wallHeight, wallLength),
+            Side.Right => new Vector3(Floats.WallThickness, wallHeight, wallLength),
+            Side.Forward => new Vector3(wallLength, wallHeight, Floats.WallThickness),
+            Side.Back => new Vector3(wallLength, wallHeight, Floats.WallThickness),
+            _ => throw new System.NotImplementedException()
+        };
+
+        GameObject wall = Instantiate(WallPrefab, position, Quaternion.identity);
+        wall.transform.localScale = size;
+        wall.transform.SetParent(transform);
+    }
+
+    private void CreateDoorSides(Side sharedSide, float doorTop, float doorCenter, float doorWidth, float wallStart, float wallEnd)
+    {
+        float doorMin = doorCenter - (doorWidth / 2f);
+        float doorMax = doorCenter + (doorWidth / 2f);
+
+        float wallCenterY = Level + (DoorHeight / 2f);
+
+        if (doorMin > wallStart)
+        {
+            float leftWallCenter = (wallStart + doorMin) / 2f;
+            Vector3 position = sharedSide switch
+            {
+                Side.Left => new Vector3(LeftBound, wallCenterY, leftWallCenter),
+                Side.Right => new Vector3(RightBound, wallCenterY, leftWallCenter),
+                Side.Forward => new Vector3(leftWallCenter, wallCenterY, ForwardBound),
+                Side.Back => new Vector3(leftWallCenter, wallCenterY, BackwardBound),
+                _ => throw new System.NotImplementedException()
+            };
+            Vector3 size = sharedSide switch
+            {
+                Side.Left => new Vector3(Floats.WallThickness, DoorHeight, doorMin - wallStart),
+                Side.Right => new Vector3(Floats.WallThickness, DoorHeight, doorMin - wallStart),
+                Side.Forward => new Vector3(doorMin - wallStart, DoorHeight, Floats.WallThickness),
+                Side.Back => new Vector3(doorMin - wallStart, DoorHeight, Floats.WallThickness),
+                _ => throw new System.NotImplementedException()
+            };
+
+            GameObject wall = Instantiate(WallPrefab, position, Quaternion.identity);
+            wall.transform.localScale = size;
+            wall.transform.SetParent(transform);
+        }
+        if (doorMax < wallEnd)
+        {
+            float rightWallCenter = (wallEnd + doorMax) / 2f;
+            Vector3 position = sharedSide switch
+            {
+                Side.Left => new Vector3(LeftBound, wallCenterY, rightWallCenter),
+                Side.Right => new Vector3(RightBound, wallCenterY, rightWallCenter),
+                Side.Forward => new Vector3(rightWallCenter, wallCenterY, ForwardBound),
+                Side.Back => new Vector3(rightWallCenter, wallCenterY, BackwardBound),
+                _ => throw new System.NotImplementedException()
+            };
+            Vector3 size = sharedSide switch
+            {
+                Side.Left => new Vector3(Floats.WallThickness, DoorHeight, wallEnd - doorMax),
+                Side.Right => new Vector3(Floats.WallThickness, DoorHeight, wallEnd - doorMax),
+                Side.Forward => new Vector3(wallEnd - doorMax, DoorHeight, Floats.WallThickness),
+                Side.Back => new Vector3(wallEnd - doorMax, DoorHeight, Floats.WallThickness),
+                _ => throw new System.NotImplementedException()
+            };
+
+            GameObject wall = Instantiate(WallPrefab, position, Quaternion.identity);
+            wall.transform.localScale = size;
+            wall.transform.SetParent(transform);
+        }
     }
 
     private void PopulateSolidWalls(Neighbor neighbor)
