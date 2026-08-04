@@ -82,10 +82,6 @@ public class Walls : MonoBehaviour
 
         float wallStart = Mathf.Max(edgeStart, neighborEdgeStart);
         float wallEnd = Mathf.Min(edgeEnd, neighborEdgeEnd);
-        if (Floats.MinimumDoorWidth > wallEnd - wallStart)
-        {
-            return;
-        }
 
         CreateDoorTop(neighbor.SharedSide, wallStart, wallEnd);
 

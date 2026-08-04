@@ -38,7 +38,7 @@ public class PathGenerator : MonoBehaviour
         int randomIndex = Random.Range(0, ActiveRooms.Count);
         Room randomRoom = ActiveRooms[randomIndex];
 
-        List<Room> unvisitedNeighbors = randomRoom.Neighbors.Select(n => n.OtherRoom).Where(r => !r.Visited).ToList();
+        List<Room> unvisitedNeighbors = randomRoom.Neighbors.Where(n => !n.OtherRoom.Visited && n.SharedLength > Floats.MinimumDoorWidth).Select(n => n.OtherRoom).ToList();
         if (unvisitedNeighbors.Count == 0)
         {
             ActiveRooms.Remove(randomRoom);

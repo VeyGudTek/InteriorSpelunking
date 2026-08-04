@@ -51,11 +51,14 @@ public class NeighborGenerator : MonoBehaviour
         {
             if (TryGetSharedSide(currentRoom, collidedRoom, out Side sharedSide))
             {
+                float sharedLength = GetSharedLength(currentRoom, collidedRoom, sharedSide);
+
                 currentRoom.Neighbors.Add(new()
                 {
                     OtherRoom = collidedRoom,
                     SharedSide = sharedSide,
-                    HasPassage = false
+                    HasPassage = false,
+                    SharedLength = sharedLength
                 });
             }
         }
@@ -101,5 +104,24 @@ public class NeighborGenerator : MonoBehaviour
         {
             return false;
         }
+    }
+
+    private float GetSharedLength(Room currentRoom, Room collidedRoom, Side sharedSide)
+    {
+        float sharedLength = sharedSide switch
+        {
+            Side.Left => Mathf.Min(currentRoom.ForwardBound, collidedRoom.ForwardBound) - Mathf.Max(currentRoom.BackwardBound, collidedRoom.BackwardBound),
+            Side.Right => Mathf.Min(currentRoom.ForwardBound, collidedRoom.ForwardBound) - Mathf.Max(currentRoom.BackwardBound, collidedRoom.BackwardBound),
+            Side.Forward => Mathf.Min(currentRoom.RightBound, collidedRoom.RightBound) - Mathf.Max(currentRoom.LeftBound, collidedRoom.LeftBound),
+            Side.Back => Mathf.Min(currentRoom.RightBound, collidedRoom.RightBound) - Mathf.Max(currentRoom.LeftBound, collidedRoom.LeftBound),
+            _ => throw new System.ArgumentOutOfRangeException($"Unexpected shared side: {sharedSide}")
+        };
+
+        if (sharedLength <= 0)
+        {
+            throw new System.InvalidOperationException($"Invalid shared length: {sharedLength}");
+        }
+
+        return sharedLength;
     }
 }
