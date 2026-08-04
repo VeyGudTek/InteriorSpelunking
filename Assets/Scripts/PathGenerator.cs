@@ -7,7 +7,7 @@ public class PathGenerator : MonoBehaviour
     [Header("State")]
     public GenerationState State = GenerationState.Waiting;
     private List<Room> AllRooms = new();
-    private List<Room> ActiveRooms = new();
+    private readonly List<Room> ActiveRooms = new();
 
     public void StartPathGeneration(List<Room> allRooms)
     {

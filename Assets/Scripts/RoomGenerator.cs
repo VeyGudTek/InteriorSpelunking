@@ -73,10 +73,10 @@ public class RoomGenerator : MonoBehaviour
 
         if (CurrentAttempts < MaxAttempts && FreeSpaceManager.TotalArea > 25f)
         {
-            float availableAreaOffset = FreeSpaceManager.PercentageAvailable * 0.50f;
+            float availableAreaOffset = Mathf.Pow(1 - FreeSpaceManager.PercentageAvailable, 3) * 0.7f;
             float randomValue = Random.value;
 
-            if (randomValue < 0.25f + availableAreaOffset || Rooms.Count == 0)
+            if (randomValue < 0.3f + availableAreaOffset)
             {
                 GenerateRandomRoom();
             }

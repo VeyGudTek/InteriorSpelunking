@@ -42,7 +42,7 @@ public class NeighborGenerator : MonoBehaviour
     private void GenerateNeighborsForRoom(Room currentRoom)
     {
         int layerMask = LayerMask.GetMask(Layers.Obstacle);
-        Vector3 halfExtent = (currentRoom.Size / 2f);
+        Vector3 halfExtent = (currentRoom.Size / 2f) + Vectors.OverlapThreshold;
 
         Collider[] collisions = Physics.OverlapBox(currentRoom.Center, halfExtent, Quaternion.identity, layerMask);
         IEnumerable<Room> collidedRooms = collisions.Select(c => c.GetComponentInParent<Room>()).Where(r => r != currentRoom);
