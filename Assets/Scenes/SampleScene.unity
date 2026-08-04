@@ -599,13 +599,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelGenerator
   Room: {fileID: 4981271287407404960, guid: d420edc473b140f4991a603fd8e62f07, type: 3}
+  StartingRoom: {fileID: 7370597050511046997, guid: 07cce5a5c1c3b474091abdd50197c33d, type: 3}
   FreeSpaceManager: {fileID: 782934741}
   RoomParent: {fileID: 1365943725}
   MaxAttempts: 300
   PlayingAreaLength: 100
+  MaxRoomSize: 15
+  MinRoomSize: 5
+  RoomHeight: 3
   GenerationState: 0
   CurrentAttempts: 0
   Rooms: []
+  Level: 0
 --- !u!4 &1269612554
 Transform:
   m_ObjectHideFlags: 0

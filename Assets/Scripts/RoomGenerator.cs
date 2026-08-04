@@ -8,6 +8,8 @@ public class RoomGenerator : MonoBehaviour
     [SerializeField]
     private GameObject Room;
     [SerializeField]
+    private GameObject StartingRoom;
+    [SerializeField]
     private FreeSpaceManager FreeSpaceManager;
     [SerializeField]
     private Transform RoomParent;
@@ -63,6 +65,12 @@ public class RoomGenerator : MonoBehaviour
 
     private void TryGenerateRoom()
     {
+        if (!Rooms.Any())
+        {
+            GenerateStartingRoom();
+            return;
+        }
+
         if (CurrentAttempts < MaxAttempts && FreeSpaceManager.TotalArea > 25f)
         {
             float availableAreaOffset = FreeSpaceManager.PercentageAvailable * 0.50f;
@@ -85,6 +93,12 @@ public class RoomGenerator : MonoBehaviour
             Destroy(FreeSpaceManager.gameObject);
             FreeSpaceManager = null;
         }
+    }
+
+    private void GenerateStartingRoom()
+    {
+        GenerateRoom(new Vector3(0f, Level, 0f), new Vector3(10f, 1f, 10f));
+        Rooms[0].IsStarting = true;
     }
 
     private void GenerateDuplicateRoom()

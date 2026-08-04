@@ -17,6 +17,9 @@ public class Room : MonoBehaviour
     public float Height = 0f;
     public float Level = 0f;
 
+    [Header("Settings")]
+    public bool IsStarting = false;
+
     [Header("Neighbor Information")]
     public bool Visited = false;
     public List<Neighbor> Neighbors = new();
