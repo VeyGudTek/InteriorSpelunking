@@ -45,6 +45,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Walls
   WallPrefab: {fileID: 7718427920323453409, guid: 0741ad72cf2357b4b9250846e478eff0, type: 3}
+  PointDebug: {fileID: 2601590182939357076, guid: 472d441adfde65b4cbf713bff6c889c0, type: 3}
+  ChanceToCreateDoorway: 0.5
+  DoorHeight: 2
+  HasCreatedWalls: 0
 --- !u!1 &2032464851644365417
 GameObject:
   m_ObjectHideFlags: 0
@@ -205,9 +209,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Room
   Obstacle: {fileID: 2032464851644365417}
   Walls: {fileID: 4473369746244048058}
+  Props: {fileID: 0}
   LeftBound: 0
   RightBound: 0
   ForwardBound: 0
   BackwardBound: 0
+  Height: 0
+  Level: 0
+  IsStarting: 0
   Visited: 0
   Neighbors: []

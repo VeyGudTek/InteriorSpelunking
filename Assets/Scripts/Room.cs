@@ -8,6 +8,8 @@ public class Room : MonoBehaviour
     [SerializeField]
     private GameObject Obstacle;
     public Walls Walls;
+    [SerializeField]
+    private Props Props;
 
     [Header("Dimensions")]
     public float LeftBound = 0f;
@@ -129,6 +131,11 @@ public class Room : MonoBehaviour
 
     public void GenerateWalls()
     {
-        Walls.CreateWalls(LeftBound, RightBound, ForwardBound, BackwardBound, Height, Level, Neighbors);
+        Walls.CreateWalls(LeftBound, RightBound, ForwardBound, BackwardBound, Height, Level, this, Neighbors);
+    }
+
+    public void StartPropGeneration()
+    {
+
     }
 }

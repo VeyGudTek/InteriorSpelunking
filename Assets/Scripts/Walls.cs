@@ -17,6 +17,7 @@ public class Walls : MonoBehaviour
     [Header("State")]
     public bool HasCreatedWalls = false;
 
+    private Room ParentRoom;
     private float LeftBound;
     private float RightBound;
     private float ForwardBound;
@@ -27,9 +28,9 @@ public class Walls : MonoBehaviour
 
     private Dictionary<Side, List<(float, float)>> SolidWallsToCreate;
 
-    public void CreateWalls(float leftBound, float rightBound, float forwardBound, float backwardBound, float height, float level, List<Neighbor> neighbors)
+    public void CreateWalls(float leftBound, float rightBound, float forwardBound, float backwardBound, float height, float level, Room room, List<Neighbor> neighbors)
     {
-        AssignProperties(leftBound, rightBound, forwardBound, backwardBound, height, level);
+        AssignProperties(leftBound, rightBound, forwardBound, backwardBound, height, level, room);
         
         foreach (Neighbor neighbor in neighbors)
         {
@@ -48,8 +49,9 @@ public class Walls : MonoBehaviour
         HasCreatedWalls = true;
     }
 
-    private void AssignProperties(float leftBound, float rightBound, float forwardBound, float backwardBound, float height, float level)
+    private void AssignProperties(float leftBound, float rightBound, float forwardBound, float backwardBound, float height, float level, Room room)
     {
+        ParentRoom = room;
         SolidWallsToCreate = new()
         {
             { Side.Left, new(){ (backwardBound, forwardBound) } },
@@ -68,11 +70,6 @@ public class Walls : MonoBehaviour
 
     private void CreateDoorway(Neighbor neighbor)
     {
-        if (Random.value > ChanceToCreateDoorway)
-        {
-            return;
-        }
-
         bool isHorizontal = neighbor.SharedSide.IsHorizontal();
 
         float edgeStart = isHorizontal ? BackwardBound : LeftBound;
@@ -83,11 +80,16 @@ public class Walls : MonoBehaviour
         float wallStart = Mathf.Max(edgeStart, neighborEdgeStart);
         float wallEnd = Mathf.Min(edgeEnd, neighborEdgeEnd);
 
-        CreateDoorTop(neighbor.SharedSide, wallStart, wallEnd);
-
         float randomDoorCenter = Random.Range(wallStart + (Floats.MinimumDoorWidth / 2f), wallEnd - (Floats.MinimumDoorWidth / 2f));
         float randomDoorWidth = Random.Range(Floats.MinimumDoorWidth, wallEnd - wallStart);
 
+        AddPassagePoints(neighbor, randomDoorCenter);
+        if (Random.value > ChanceToCreateDoorway)
+        {
+            return;
+        }
+
+        CreateDoorTop(neighbor.SharedSide, wallStart, wallEnd);
         CreateDoorSides(neighbor.SharedSide, randomDoorCenter, randomDoorWidth, wallStart, wallEnd);
     }
 
@@ -179,6 +181,21 @@ public class Walls : MonoBehaviour
             wall.transform.localScale = size;
             wall.transform.SetParent(transform);
         }
+    }
+
+    private void AddPassagePoints(Neighbor neighbor, float doorCenter)
+    {
+        Vector3 doorPosition = neighbor.SharedSide switch
+        {
+            Side.Left => new Vector3(LeftBound, Level, doorCenter),
+            Side.Right => new Vector3(RightBound, Level, doorCenter),
+            Side.Forward => new Vector3(doorCenter, Level, ForwardBound),
+            Side.Back => new Vector3(doorCenter, Level, BackwardBound),
+            _ => throw new System.NotImplementedException()
+        };
+
+        neighbor.PassagePoint = doorPosition;
+        neighbor.OtherRoom.Neighbors.Where(n => n.OtherRoom == ParentRoom).First().PassagePoint = doorPosition;
     }
 
     private void ClampSolidWalls(Neighbor neighbor)
