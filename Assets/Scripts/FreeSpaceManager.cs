@@ -146,8 +146,6 @@ public class FreeSpaceManager : MonoBehaviour
         freeSpace.transform.localScale = size;
         freeSpace.transform.SetParent(transform);
 
-        Physics.SyncTransforms();
-
         return true;
     }
 
