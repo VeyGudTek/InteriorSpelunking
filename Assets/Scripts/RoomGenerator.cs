@@ -91,8 +91,6 @@ public class RoomGenerator : MonoBehaviour
         else
         {
             GenerationState = GenerationState.Completed;
-            Destroy(FreeSpaceManager.gameObject);
-            FreeSpaceManager = null;
         }
     }
 

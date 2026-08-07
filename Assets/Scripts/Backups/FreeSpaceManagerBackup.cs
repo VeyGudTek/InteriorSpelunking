@@ -2,24 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class FreeSpaceManager : MonoBehaviour
+public class FreeSpaceManagerBackup : MonoBehaviour
 {
-    [System.Serializable]
-    private class FreeSpace
-    {
-        public float Left;
-        public float Right;
-        public float Forward;
-        public float Back;
-
-        public Vector3 Position;
-        public Vector3 Size;
-    }
-
     [SerializeField]
-    private List<FreeSpace> FreeSpaces = new();
+    private GameObject FreeSpacePrefab;
 
-    public float TotalArea => FreeSpaces.Sum(fs => fs.Size.GetArea());
+    private List<GameObject> FreeSpaces = new();
+
+    public float TotalArea => FreeSpaces.Sum(fs => fs.transform.localScale.GetArea());
     private float InitialArea = 0f;
     public float PercentageAvailable => TotalArea / InitialArea;
     private float Level = 0f;
@@ -27,7 +17,7 @@ public class FreeSpaceManager : MonoBehaviour
     public void InitializeFreeSpace(Vector3 center, Vector3 size, float level)
     {
         Level = level;
-        if (TryCreateFreeSpace(center, size, out FreeSpace freeSpace))
+        if (TryCreateFreeSpace(center, size, out GameObject freeSpace))
         {
             FreeSpaces.Add(freeSpace);
             InitialArea = TotalArea;
@@ -40,20 +30,21 @@ public class FreeSpaceManager : MonoBehaviour
 
     public void UpdateSpaces()
     {
-        List<FreeSpace> newFreeSpaces = new();
+        List<GameObject> newFreeSpaces = new();
 
-        foreach (FreeSpace freeSpace in FreeSpaces)
+        foreach (GameObject freeSpace in FreeSpaces)
         {
-            newFreeSpaces.AddRange(GetNewFreeSpaces(freeSpace));
+            newFreeSpaces.AddRange(GetNewFreeSpaces(freeSpace.transform));
+            Destroy(freeSpace);
         }
 
         FreeSpaces = newFreeSpaces;
     }
 
-    private List<FreeSpace> GetNewFreeSpaces(FreeSpace space)
+    private List<GameObject> GetNewFreeSpaces(Transform spaceTransform)
     {
-        Vector3 center = space.Position;
-        Vector3 size = space.Size;
+        Vector3 center = spaceTransform.position;
+        Vector3 size = spaceTransform.localScale;
         Vector3 halfExtent = (size / 2f) - Vectors.OverlapThreshold;
 
         int layerMask = LayerMask.GetMask(Layers.Obstacle);
@@ -62,7 +53,7 @@ public class FreeSpaceManager : MonoBehaviour
 
         if (colliders.Length == 0)
         {
-            if (TryCreateFreeSpace(center, size, out FreeSpace freeSpace))
+            if (TryCreateFreeSpace(center, size, out GameObject freeSpace))
             {
                 return new() { freeSpace };
             }
@@ -77,25 +68,22 @@ public class FreeSpaceManager : MonoBehaviour
             throw new System.InvalidOperationException("Multiple colliders detected. Update free spaces once per new obstacle.");
         }
 
-        return SplitSpace(colliders[0].transform, space);
+        return SplitSpace(colliders[0].transform, spaceTransform);
     }
 
-    private List<FreeSpace> SplitSpace(Transform collision, FreeSpace original)
+    private List<GameObject> SplitSpace(Transform collision, Transform original)
     {
-        float originalLeft = original.Left;
-        float originalRight = original.Right;
-        float originalForward = original.Forward;
-        float originalBack = original.Back;
+        (float originalLeft, float originalRight, float originalForward, float originalBack) = original.GetBounds();
         (float left, float right, float _, float _) = collision.GetBounds();
 
-        List<FreeSpace> newFreeSpaces = new();
+        List<GameObject> newFreeSpaces = new();
 
         float clampedLeft = originalLeft;
         float clampedRight = originalRight;
         if (left > originalLeft)
         {
             (Vector3 center, Vector3 size) = VectorExtensions.ConvertToVector(originalLeft, left, originalForward, originalBack, Level);
-            if (TryCreateFreeSpace(center, size, out FreeSpace freeSpace))
+            if (TryCreateFreeSpace(center, size, out GameObject freeSpace))
             {
                 newFreeSpaces.Add(freeSpace);
             }
@@ -104,7 +92,7 @@ public class FreeSpaceManager : MonoBehaviour
         if (right < originalRight)
         {
             (Vector3 center, Vector3 size) = VectorExtensions.ConvertToVector(right, originalRight, originalForward, originalBack, Level);
-            if (TryCreateFreeSpace(center, size, out FreeSpace freeSpace))
+            if (TryCreateFreeSpace(center, size, out GameObject freeSpace))
             {
                 newFreeSpaces.Add(freeSpace);
             }
@@ -116,19 +104,18 @@ public class FreeSpaceManager : MonoBehaviour
         return newFreeSpaces;
     }
 
-    private List<FreeSpace> SplitSpaceVertical(Transform collision, FreeSpace original, float newLeft, float newRight)
+    private List<GameObject> SplitSpaceVertical(Transform collision, Transform original, float newLeft, float newRight)
     {
-        float originalForward = original.Forward;
-        float originalBack = original.Back;
+        (float _, float _, float originalForward, float originalBack) = original.GetBounds();
         (float _, float _, float forward, float back) = collision.GetBounds();
 
-        List<FreeSpace> newFreeSpaces = new();
+        List<GameObject> newFreeSpaces = new();
 
         if (forward < originalForward)
         {
             (Vector3 center, Vector3 size) = VectorExtensions.ConvertToVector(newLeft, newRight, originalForward, forward, Level);
 
-            if (TryCreateFreeSpace(center, size, out FreeSpace freeSpace))
+            if (TryCreateFreeSpace(center, size, out GameObject freeSpace))
             {
                 newFreeSpaces.Add(freeSpace);
             }
@@ -137,7 +124,7 @@ public class FreeSpaceManager : MonoBehaviour
         {
             (Vector3 center, Vector3 size) = VectorExtensions.ConvertToVector(newLeft, newRight, back, originalBack, Level);
 
-            if (TryCreateFreeSpace(center, size, out FreeSpace freeSpace))
+            if (TryCreateFreeSpace(center, size, out GameObject freeSpace))
             {
                 newFreeSpaces.Add(freeSpace);
             }
@@ -146,7 +133,7 @@ public class FreeSpaceManager : MonoBehaviour
         return newFreeSpaces;
     }
 
-    private bool TryCreateFreeSpace(Vector3 center, Vector3 size, out FreeSpace freeSpace)
+    private bool TryCreateFreeSpace(Vector3 center, Vector3 size, out GameObject freeSpace)
     {
         freeSpace = null;
 
@@ -155,17 +142,9 @@ public class FreeSpaceManager : MonoBehaviour
             return false;
         }
 
-        (float left, float right, float forward, float back) = VectorExtensions.GetBounds(center, size);
-        freeSpace = new FreeSpace()
-        {
-            Left = left,
-            Right = right,
-            Forward = forward,
-            Back = back,
-
-            Position = center,
-            Size = size
-        };
+        freeSpace = Instantiate(FreeSpacePrefab, center, Quaternion.identity);
+        freeSpace.transform.localScale = size;
+        freeSpace.transform.SetParent(transform);
 
         return true;
     }
@@ -175,14 +154,17 @@ public class FreeSpaceManager : MonoBehaviour
         float randomThreshold = Random.Range(0f, TotalArea);
         float cumulativeArea = 0f;
 
-        foreach(FreeSpace freeSpace in FreeSpaces)
+        foreach(GameObject freeSpace in FreeSpaces)
         {
-            float area = freeSpace.Size.GetArea();
+            float area = freeSpace.transform.localScale.GetArea();
             cumulativeArea += area;
             if (cumulativeArea >= randomThreshold)
             {
-                float randomX = Random.Range(freeSpace.Left, freeSpace.Right);
-                float randomZ = Random.Range(freeSpace.Back, freeSpace.Forward);
+                Vector3 center = freeSpace.transform.position;
+                Vector3 size = freeSpace.transform.localScale;
+
+                float randomX = Random.Range(center.x - (size.x / 2f), center.x + (size.x / 2f));
+                float randomZ = Random.Range(center.z - (size.z / 2f), center.z + (size.z / 2f));
 
                 return new Vector3(randomX, Level, randomZ);
             }
