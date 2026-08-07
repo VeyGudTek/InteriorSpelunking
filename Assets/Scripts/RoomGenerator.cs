@@ -63,7 +63,6 @@ public class RoomGenerator : MonoBehaviour
         }
     }
 
-    //Gotta refactor: SyncTransform calls -> Defer FreeSpaceUpdate -> Defer Clamping
     private void TryGenerateRoom()
     {
         if (!Rooms.Any())
