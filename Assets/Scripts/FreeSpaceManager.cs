@@ -16,6 +16,7 @@ public class FreeSpaceManager : MonoBehaviour
         public Vector3 Size;
     }
 
+    //If Debug is needed, use Gizmos.DrawWireCube
     [SerializeField]
     private List<FreeSpace> FreeSpaces = new();
 
