@@ -83,14 +83,18 @@ public class Walls : MonoBehaviour
         float randomDoorCenter = Random.Range(wallStart + (Floats.MinimumDoorWidth / 2f), wallEnd - (Floats.MinimumDoorWidth / 2f));
         float randomDoorWidth = Random.Range(Floats.MinimumDoorWidth, wallEnd - wallStart);
 
-        AddPassagePoints(neighbor, randomDoorCenter);
         if (Random.value > ChanceToCreateDoorway)
         {
+            AddPassagePoints(neighbor, randomDoorCenter);
+            AddPassageWidth(neighbor, Floats.MinimumDoorWidth);
             return;
         }
 
         CreateDoorTop(neighbor.SharedSide, wallStart, wallEnd);
-        CreateDoorSides(neighbor.SharedSide, randomDoorCenter, randomDoorWidth, wallStart, wallEnd);
+        CreateDoorSides(neighbor.SharedSide, randomDoorCenter, randomDoorWidth, wallStart, wallEnd, out float trueDoorCenter, out float trueDoorWidth);
+
+        AddPassagePoints(neighbor, trueDoorCenter);
+        AddPassageWidth(neighbor, trueDoorWidth);
     }
 
     private void CreateDoorTop(Side sharedSide, float wallStart, float wallEnd)
@@ -126,10 +130,13 @@ public class Walls : MonoBehaviour
         wall.transform.SetParent(transform);
     }
 
-    private void CreateDoorSides(Side sharedSide, float doorCenter, float doorWidth, float wallStart, float wallEnd)
+    private void CreateDoorSides(Side sharedSide, float doorCenter, float doorWidth, float wallStart, float wallEnd, out float actualDoorCenter, out float actualDoorWidth)
     {
         float doorMin = doorCenter - (doorWidth / 2f);
         float doorMax = doorCenter + (doorWidth / 2f);
+
+        actualDoorWidth = Mathf.Min(doorMax, wallEnd) - Mathf.Max(doorMin, wallStart);
+        actualDoorCenter = (Mathf.Min(doorMax, wallEnd) + Mathf.Max(doorMin, wallStart)) / 2f;
 
         float wallCenterY = Level + (DoorHeight / 2f);
 
@@ -196,6 +203,12 @@ public class Walls : MonoBehaviour
 
         neighbor.PassagePoint = doorPosition;
         neighbor.OtherRoom.Neighbors.Where(n => n.OtherRoom == ParentRoom).First().PassagePoint = doorPosition;
+    }
+
+    private void AddPassageWidth(Neighbor neighbor, float doorWidth)
+    {
+        neighbor.PassageWidth = doorWidth;
+        neighbor.OtherRoom.Neighbors.Where(n => n.OtherRoom == ParentRoom).First().PassageWidth = doorWidth;
     }
 
     private void ClampSolidWalls(Neighbor neighbor)

@@ -5,12 +5,15 @@ using UnityEngine;
 [Serializable]
 public class Neighbor
 {
-    //Initialized Variables
+    //NeighborGenerator
     public Room OtherRoom;
     public Side SharedSide;
     public float SharedLength = 0f;
 
-    //Hydrated Variables
+    //PathGenerator
     public bool HasPassage = false;
+
+    //WallGenerator
     public Vector3 PassagePoint = Vector3.zero;
+    public float PassageWidth = 0f;
 }
