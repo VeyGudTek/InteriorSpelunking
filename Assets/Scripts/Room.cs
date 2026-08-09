@@ -129,6 +129,12 @@ public class Room : MonoBehaviour
         Physics.SyncTransforms();
     }
 
+    public void RemoveObstacle()
+    {
+        Destroy(Obstacle);
+        Obstacle = null;
+    }
+
     public void GenerateWalls()
     {
         Walls.CreateWalls(LeftBound, RightBound, ForwardBound, BackwardBound, Height, Level, this, Neighbors);

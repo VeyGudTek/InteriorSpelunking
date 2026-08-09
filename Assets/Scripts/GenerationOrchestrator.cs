@@ -7,6 +7,7 @@ public class GenerationOrchestrator : MonoBehaviour
     {
         RoomLayout,
         NeighborGeneration,
+        RoomObstacleRemoval,
         PathGeneration,
         WallGeneration,
         PropPathGeneration,
@@ -19,6 +20,8 @@ public class GenerationOrchestrator : MonoBehaviour
     private RoomGenerator RoomGenerator;
     [SerializeField]
     private NeighborGenerator NeighborGenerator;
+    [SerializeField]
+    private RoomObstacleRemover RoomObstacleRemover;
     [SerializeField]
     private PathGenerator PathGenerator;
     [SerializeField]
@@ -43,6 +46,9 @@ public class GenerationOrchestrator : MonoBehaviour
                 break;
             case OrchestrationState.NeighborGeneration:
                 ProcessNeighborGeneration();
+                break;
+            case OrchestrationState.RoomObstacleRemoval:
+                ProcessRoomObstacleRemoval();
                 break;
             case OrchestrationState.PathGeneration:
                 ProcessPathGeneration();
@@ -86,6 +92,19 @@ public class GenerationOrchestrator : MonoBehaviour
             return;
         }
         if (NeighborGenerator.State == GenerationState.Completed)
+        {
+            State = OrchestrationState.RoomObstacleRemoval;
+        }
+    }
+
+    private void ProcessRoomObstacleRemoval()
+    {
+        if (RoomObstacleRemover.State == GenerationState.Waiting)
+        {
+            RoomObstacleRemover.StartObstacleRemoval(GeneratedRooms);
+            return;
+        }
+        if (RoomObstacleRemover.State == GenerationState.Completed)
         {
             State = OrchestrationState.PathGeneration;
         }
