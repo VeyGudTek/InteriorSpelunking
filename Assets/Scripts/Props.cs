@@ -6,11 +6,12 @@ public class Props : MonoBehaviour
     [Header("References")]
     [SerializeField]
     private GameObject TempProp;
-    [SerializeField]
-    private PropPathGenerator PropPathGenerator;
 
     [Header("State")]
     public GenerationState State = GenerationState.Waiting;
+    private int CurrentAttempts = 0;
+    private int MaxAttempts = 50;
+    private List<GameObject> GeneratedProps = new();
 
     private float LeftBound;
     private float RightBound;
@@ -18,10 +19,9 @@ public class Props : MonoBehaviour
     private float BackBound;
     private float Level;
 
-    public void StartGeneration(float left, float right, float forward, float back, float level, List<Neighbor> neighbors)
+    public void StartGeneration(float left, float right, float forward, float back, float level)
     {
         AssignProperties(left, right, forward, back, level);
-        PropPathGenerator.GeneratePath(left, right, forward, back, level, neighbors);
 
         State = GenerationState.Generating;
     }
@@ -35,16 +35,15 @@ public class Props : MonoBehaviour
         Level = level;
     }
 
-    private void Update()
+    public void GenerateProps()
     {
-        if (State == GenerationState.Generating)
+        if (CurrentAttempts < MaxAttempts)
         {
-            GenerateProps();
+            CurrentAttempts++;
         }
-    }
-
-    private void GenerateProps()
-    {
-        
+        else
+        {
+            State = GenerationState.Completed;
+        }
     }
 }

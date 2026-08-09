@@ -9,6 +9,7 @@ public class GenerationOrchestrator : MonoBehaviour
         NeighborGeneration,
         PathGeneration,
         WallGeneration,
+        PropGeneration,
         Finished
     }
 
@@ -21,6 +22,8 @@ public class GenerationOrchestrator : MonoBehaviour
     private PathGenerator PathGenerator;
     [SerializeField]
     private WallGenerator WallGenerator;
+    [SerializeField]
+    private PropGenerator PropGenerator;
 
     [Header("State")]
     [SerializeField]
@@ -44,8 +47,10 @@ public class GenerationOrchestrator : MonoBehaviour
             case OrchestrationState.WallGeneration:
                 ProcessWallGeneration();
                 break;
+            case OrchestrationState.PropGeneration:
+                ProcessPropGeneration();
+                break;
             case OrchestrationState.Finished:
-                //Done
                 break;
             default:
                 throw new System.InvalidOperationException("Undefined Orchestration State");
@@ -101,6 +106,19 @@ public class GenerationOrchestrator : MonoBehaviour
             return;
         }
         if (WallGenerator.State == GenerationState.Completed)
+        {
+            State = OrchestrationState.PropGeneration;
+        }
+    }
+
+    private void ProcessPropGeneration()
+    {
+        if (PropGenerator.State == GenerationState.Waiting)
+        {
+            PropGenerator.StartPropGeneration(GeneratedRooms);
+            return;
+        }
+        if (PropGenerator.State == GenerationState.Completed)
         {
             State = OrchestrationState.Finished;
         }
