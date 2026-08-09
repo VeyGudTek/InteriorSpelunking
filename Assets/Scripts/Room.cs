@@ -8,6 +8,7 @@ public class Room : MonoBehaviour
     [SerializeField]
     private GameObject Obstacle;
     public Walls Walls;
+    public PropPath PropPath;
     public Props Props;
 
     [Header("Dimensions")]
@@ -131,6 +132,11 @@ public class Room : MonoBehaviour
     public void GenerateWalls()
     {
         Walls.CreateWalls(LeftBound, RightBound, ForwardBound, BackwardBound, Height, Level, this, Neighbors);
+    }
+
+    public void GeneratePropPaths()
+    {
+        PropPath.GeneratePaths(Neighbors);
     }
 
     public void StartPropGeneration()

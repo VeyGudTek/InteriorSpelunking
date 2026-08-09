@@ -2,15 +2,24 @@ using UnityEngine;
 
 public class PropBase : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [Header("References")]
+    [SerializeField]
+    private GameObject Collider;
+    [SerializeField]
+    private GameObject Visual;
+
+    public void Initialize(Side direction, Vector3 position)
     {
-        
+        TransformProp(direction, position);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void TransformProp(Side direction, Vector3 position)
     {
-        
+        Collider.transform.position = position;
+        Visual.transform.position = position;
+
+        Quaternion orientation = direction.GetRotation();
+        Collider.transform.rotation = orientation;
+        Visual.transform.rotation = orientation;
     }
 }

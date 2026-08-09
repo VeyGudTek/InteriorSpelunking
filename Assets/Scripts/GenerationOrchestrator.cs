@@ -9,6 +9,7 @@ public class GenerationOrchestrator : MonoBehaviour
         NeighborGeneration,
         PathGeneration,
         WallGeneration,
+        PropPathGeneration,
         PropGeneration,
         Finished
     }
@@ -22,6 +23,8 @@ public class GenerationOrchestrator : MonoBehaviour
     private PathGenerator PathGenerator;
     [SerializeField]
     private WallGenerator WallGenerator;
+    [SerializeField]
+    private PropPathGenerator PropPathGenerator;
     [SerializeField]
     private PropGenerator PropGenerator;
 
@@ -46,6 +49,9 @@ public class GenerationOrchestrator : MonoBehaviour
                 break;
             case OrchestrationState.WallGeneration:
                 ProcessWallGeneration();
+                break;
+            case OrchestrationState.PropPathGeneration:
+                ProcessPropPathGeneration();
                 break;
             case OrchestrationState.PropGeneration:
                 ProcessPropGeneration();
@@ -106,6 +112,19 @@ public class GenerationOrchestrator : MonoBehaviour
             return;
         }
         if (WallGenerator.State == GenerationState.Completed)
+        {
+            State = OrchestrationState.PropPathGeneration;
+        }
+    }
+
+    private void ProcessPropPathGeneration()
+    {
+        if (PropPathGenerator.State == GenerationState.Waiting)
+        {
+            PropPathGenerator.StartPropPathGeneration(GeneratedRooms);
+            return;
+        }
+        if (PropPathGenerator.State == GenerationState.Completed)
         {
             State = OrchestrationState.PropGeneration;
         }
