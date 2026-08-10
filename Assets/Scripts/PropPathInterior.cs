@@ -44,6 +44,8 @@ public class PropPathInterior : MonoBehaviour
         ConnectEntryAndInterior(entryNodes, interiorNode);
 
         List<PathNode> allNodes = entryNodes.Concat(interiorNode).ToList();
+        RemoveInteriorDeadEnds(allNodes, interiorNode);
+
         InstantiatePaths(allNodes);
         Physics.SyncTransforms();
     }
@@ -153,6 +155,34 @@ public class PropPathInterior : MonoBehaviour
         else
         {
             CreateMinimumSpanningTree(entryNodes);
+        }
+    }
+
+    private void RemoveInteriorDeadEnds(List<PathNode> allNodes, List<PathNode> interiorNodes)
+    {
+        int maxIterations = interiorNodes.Count;
+
+        int breaker = -1;
+        while (true)
+        {
+            breaker++;
+            if (breaker > maxIterations)
+            {
+                throw new System.InvalidOperationException("Breaker limit exceeded in RemoveInteriorDeadEnds");
+            }
+
+            PathNode deadEndNode = interiorNodes.Where(n => n.Neighbors.Count == 1).FirstOrDefault();
+            if (deadEndNode == null)
+            {
+                break;
+            }
+
+            foreach (PathNode node in allNodes)
+            {
+                node.Neighbors.Remove(deadEndNode);
+            }
+            allNodes.Remove(deadEndNode);
+            interiorNodes.Remove(deadEndNode);
         }
     }
 
