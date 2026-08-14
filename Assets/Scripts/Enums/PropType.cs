@@ -3,7 +3,7 @@ public enum PropType
     Edge,
     Center,
     Supporting,
-    Decoration,
+    WallDecoration,
     Random,
     TableTop
 }

@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: PropDatabase
   m_EditorClassIdentifier: Assembly-CSharp::PropDatabase
   EdgeProps: []
-  CenterProps: []
+  CenterProps:
+  - {fileID: 8071730897571855276, guid: d09922750b09d824787c289462174b5b, type: 3}
   SupportingProps: []
-  Decoration: []
+  WallDecoration: []
   RandomProps: []
   TableTopProps: []

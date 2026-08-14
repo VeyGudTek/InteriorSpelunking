@@ -79,5 +79,6 @@ public class PropGenerator : MonoBehaviour
                 room.Props.GenerateProps();
             }
         }
+        Physics.SyncTransforms();
     }
 }

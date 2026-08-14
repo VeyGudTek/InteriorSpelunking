@@ -312,7 +312,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: befe2242aa5542b49a00a72bd780ffc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Props
-  TempProp: {fileID: 233575504992966536, guid: fc340370926d6f84f942d810fa8b80d9, type: 3}
+  PropDatabase: {fileID: 11400000, guid: 03c814e718bd36e42bf0894079ba7e1e, type: 2}
   State: 0
 --- !u!1 &7561981477322471474
 GameObject:
@@ -358,5 +358,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11bbb5b0fa762b044a383c5be9656b81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PropPathInterior
-  PathPrefab: {fileID: 5820237890898203092, guid: d9852ddaa9767414b90ad1d799f951a9, type: 3}
+  PathPrefab: {fileID: 8435292205724302550, guid: 227b77c856bb4f6438a1a111b819132f, type: 3}
   Path: []
