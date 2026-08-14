@@ -108,14 +108,9 @@ public class NeighborGenerator : MonoBehaviour
 
     private float GetSharedLength(Room currentRoom, Room collidedRoom, Side sharedSide)
     {
-        float sharedLength = sharedSide switch
-        {
-            Side.Left => Mathf.Min(currentRoom.ForwardBound, collidedRoom.ForwardBound) - Mathf.Max(currentRoom.BackwardBound, collidedRoom.BackwardBound),
-            Side.Right => Mathf.Min(currentRoom.ForwardBound, collidedRoom.ForwardBound) - Mathf.Max(currentRoom.BackwardBound, collidedRoom.BackwardBound),
-            Side.Forward => Mathf.Min(currentRoom.RightBound, collidedRoom.RightBound) - Mathf.Max(currentRoom.LeftBound, collidedRoom.LeftBound),
-            Side.Back => Mathf.Min(currentRoom.RightBound, collidedRoom.RightBound) - Mathf.Max(currentRoom.LeftBound, collidedRoom.LeftBound),
-            _ => throw new System.ArgumentOutOfRangeException($"Unexpected shared side: {sharedSide}")
-        };
+        float sharedLength = sharedSide.IsHorizontal()
+            ? Mathf.Min(currentRoom.ForwardBound, collidedRoom.ForwardBound) - Mathf.Max(currentRoom.BackwardBound, collidedRoom.BackwardBound)
+            : Mathf.Min(currentRoom.RightBound, collidedRoom.RightBound) - Mathf.Max(currentRoom.LeftBound, collidedRoom.LeftBound);
 
         if (sharedLength <= 0)
         {

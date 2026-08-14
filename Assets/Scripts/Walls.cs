@@ -217,7 +217,7 @@ public class Walls : MonoBehaviour
         List<(float, float)> existingAvailableEdges = SolidWallsToCreate[sideToClamp];
         List<(float, float)> newAvailableEdges = new();
 
-        bool isHorizontal = sideToClamp == Side.Left || sideToClamp == Side.Right;
+        bool isHorizontal = sideToClamp.IsHorizontal();
         float neighborStart = isHorizontal ? neighbor.OtherRoom.BackwardBound : neighbor.OtherRoom.LeftBound;
         float neighborEnd = isHorizontal ? neighbor.OtherRoom.ForwardBound : neighbor.OtherRoom.RightBound;
 
