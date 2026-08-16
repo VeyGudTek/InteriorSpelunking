@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ea7bf4d45271f44ba9da5fd931466e3, type: 3}
   m_Name: PropDatabase
   m_EditorClassIdentifier: Assembly-CSharp::PropDatabase
-  EdgeProps: []
+  EdgeProps:
+  - {fileID: 8071730897571855276, guid: 601cc663d32a9ed45a16805a67926703, type: 3}
   CenterProps:
   - {fileID: 8071730897571855276, guid: d09922750b09d824787c289462174b5b, type: 3}
   SupportingProps: []

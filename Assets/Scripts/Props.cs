@@ -66,12 +66,12 @@ public class Props : MonoBehaviour
         {
             TryGenerateRandomProp();
         }
+        */
 
         if (Random.value > EdgePropChance)
         {
             TryGenerateEdgeProp();
         }
-        */
 
         TryGenerateCenterProp();
     }
@@ -81,14 +81,56 @@ public class Props : MonoBehaviour
         //TODO
     }
 
-    private void TryGenerateEdgeProp()
+    private void TryGenerateRandomProp()
     {
         //TODO
     }
 
-    private void TryGenerateRandomProp()
+    private void TryGenerateEdgeProp()
     {
-        //TODO
+        GameObject propPrefab = PropDatabase.GetRandomProp(PropType.Edge);
+        PropSettings propData = propPrefab.GetComponent<PropSettings>();
+
+        Vector3 propSize = propData.GetSize();
+        Side randomRoomSide = SideExtensions.GetRandomSide();
+
+        if (PropExceedsRoom(randomRoomSide.IsHorizontal(), propSize))
+        {
+            return;
+        }
+
+        float roomBoundValue = randomRoomSide switch
+        {
+            Side.Left => LeftBound,
+            Side.Right => RightBound,
+            Side.Forward => ForwardBound,
+            Side.Back => BackBound,
+            _ => throw new System.ArgumentOutOfRangeException()
+        };
+        
+        float wallOffset = randomRoomSide.IsPositive() ? -propSize.z / 2f : propSize.z / 2f;
+        float horizontalRoomClamp = propSize.x / 2f;
+        Vector3 newPosition = new Vector3(
+            randomRoomSide.IsHorizontal() ? roomBoundValue + wallOffset : Random.Range(LeftBound + horizontalRoomClamp, RightBound - horizontalRoomClamp),
+            Level,
+            randomRoomSide.IsHorizontal() ? Random.Range(BackBound + horizontalRoomClamp, ForwardBound - horizontalRoomClamp) : roomBoundValue + wallOffset
+        );
+
+        Quaternion newRotation = randomRoomSide.GetOpposite().GetRotation();
+        Vector3 halfExtents = propSize / 2f - Vectors.OverlapThreshold;
+        int layerMask = LayerMask.GetMask(Layers.Prop);
+        Collider[] collisions = Physics.OverlapBox(newPosition, halfExtents, newRotation, layerMask);
+
+        if (collisions.Length == 0)
+        {
+            InstantiateProp(propPrefab, newPosition, newRotation);
+            return;
+        }
+
+        if (!propData.PathBlocking && collisions.All(c => c.gameObject.CompareTag(Tags.Interior)))
+        {
+            InstantiateProp(propPrefab, newPosition, newRotation);
+        }
     }
 
     private void TryGenerateCenterProp()
@@ -101,14 +143,14 @@ public class Props : MonoBehaviour
         Side randomSide = SideExtensions.GetRandomSide();
         Quaternion randomRotation = randomSide.GetRotation();
         bool isHorizontalRotation = randomSide.IsHorizontal();
-        float xClamp = isHorizontalRotation ? size.z / 2f : size.x / 2f;
-        float zClamp = isHorizontalRotation ? size.x / 2f : size.z / 2f;
 
-        if (xClamp * 2f > RightBound - LeftBound || zClamp * 2f > ForwardBound - BackBound)
+        if (PropExceedsRoom(isHorizontalRotation, size))
         {
             return;
         }
 
+        float xClamp = isHorizontalRotation ? size.z / 2f : size.x / 2f;
+        float zClamp = isHorizontalRotation ? size.x / 2f : size.z / 2f;
         Vector3 randomPosition = new(
             Random.Range(LeftBound + xClamp, RightBound - xClamp),
             Level,
@@ -129,6 +171,14 @@ public class Props : MonoBehaviour
         {
             InstantiateProp(propPrefab, randomPosition, randomRotation);
         }
+    }
+
+    private bool PropExceedsRoom(bool isRotated, Vector3 propSize)
+    {
+        float xSize = isRotated ? propSize.z : propSize.x;
+        float zSize = isRotated ? propSize.x : propSize.z;
+
+        return xSize > RightBound - LeftBound || zSize > ForwardBound - BackBound;
     }
 
     private void InstantiateProp(GameObject prop, Vector3 position, Quaternion rotation)

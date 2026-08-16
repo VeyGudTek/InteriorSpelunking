@@ -15,9 +15,26 @@ public static class SideExtensions
         };
     }
 
+    public static Side GetOpposite(this Side side)
+    {
+        return side switch
+        {
+            Side.Left => Side.Right,
+            Side.Right => Side.Left,
+            Side.Forward => Side.Back,
+            Side.Back => Side.Forward,
+            _ => throw new System.ArgumentOutOfRangeException(),
+        };
+    }
+
     public static bool IsHorizontal(this Side side)
     {
         return side == Side.Left || side == Side.Right;
+    }
+
+    public static bool IsPositive(this Side side)
+    {
+        return side == Side.Right || side == Side.Forward;
     }
 
     public static Quaternion GetRotation(this Side side)
