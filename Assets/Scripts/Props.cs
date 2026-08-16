@@ -105,16 +105,7 @@ public class Props : MonoBehaviour
         int layerMask = LayerMask.GetMask(Layers.Prop);
         Collider[] collisions = Physics.OverlapSphere(randomPosition, halfExtent, layerMask);
 
-        if (collisions.Length == 0)
-        {
-            InstantiateProp(propPrefab, randomPosition, randomRotation);
-            return;
-        }
-
-        if (!propData.PathBlocking && collisions.All(c => c.gameObject.CompareTag(Tags.Interior)))
-        {
-            InstantiateProp(propPrefab, randomPosition, randomRotation);
-        }
+        TryInstantiateProp(collisions, propData, propPrefab, randomPosition, randomRotation);
     }
 
     private void TryGenerateEdgeProp()
@@ -152,16 +143,7 @@ public class Props : MonoBehaviour
         int layerMask = LayerMask.GetMask(Layers.Prop);
         Collider[] collisions = Physics.OverlapBox(newPosition, halfExtents, newRotation, layerMask);
 
-        if (collisions.Length == 0)
-        {
-            InstantiateProp(propPrefab, newPosition, newRotation);
-            return;
-        }
-
-        if (!propData.PathBlocking && collisions.All(c => c.gameObject.CompareTag(Tags.Interior)))
-        {
-            InstantiateProp(propPrefab, newPosition, newRotation);
-        }
+        TryInstantiateProp(collisions, propData, propPrefab, newPosition, newRotation);
     }
 
     private void TryGenerateCenterProp()
@@ -192,16 +174,7 @@ public class Props : MonoBehaviour
         int layerMask = LayerMask.GetMask(Layers.Prop);
         Collider[] collisions = Physics.OverlapBox(randomPosition, halfExtents, randomRotation, layerMask);
 
-        if (collisions.Length == 0)
-        {
-            InstantiateProp(propPrefab, randomPosition, randomRotation);
-            return;
-        }
-
-        if (!propData.PathBlocking && collisions.All(c => c.gameObject.CompareTag(Tags.Interior)))
-        {
-            InstantiateProp(propPrefab, randomPosition, randomRotation);
-        }
+        TryInstantiateProp(collisions, propData, propPrefab, randomPosition, randomRotation);
     }
 
     private bool PropExceedsRoom(bool isRotated, Vector3 propSize)
@@ -212,12 +185,22 @@ public class Props : MonoBehaviour
         return xSize > RightBound - LeftBound || zSize > ForwardBound - BackBound;
     }
 
-    private void InstantiateProp(GameObject prop, Vector3 position, Quaternion rotation)
+    private void TryInstantiateProp(Collider[] collisions, PropSettings propSettings, GameObject prop, Vector3 position, Quaternion rotation)
     {
-        GameObject newProp = Instantiate(prop, transform);
-        PropSettings propSettings = newProp.GetComponent<PropSettings>();
+        if (propSettings.PathBlocking && collisions.Any(c => c.gameObject.CompareTag(Tags.Interior)))
+        {
+            return;
+        }
 
-        propSettings.SetPosition(rotation, position);
-        GeneratedProps.Add(propSettings);
+        if (collisions.Any(c => !c.gameObject.CompareTag(Tags.Interior)))
+        {
+            return;
+        }
+
+        GameObject newProp = Instantiate(prop, transform);
+        PropSettings newPropSettings = newProp.GetComponent<PropSettings>();
+
+        newPropSettings.SetPosition(rotation, position);
+        GeneratedProps.Add(newPropSettings);
     }
 }
