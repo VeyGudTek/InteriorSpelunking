@@ -61,14 +61,14 @@ public class Props : MonoBehaviour
         {
             TryGenerateSupportingProp();
         }
+        */
 
-        if (Random.value > RandomPropChance)
+        if (Random.value < RandomPropChance)
         {
             TryGenerateRandomProp();
         }
-        */
 
-        if (Random.value > EdgePropChance)
+        if (Random.value < EdgePropChance)
         {
             TryGenerateEdgeProp();
         }
@@ -83,7 +83,38 @@ public class Props : MonoBehaviour
 
     private void TryGenerateRandomProp()
     {
-        //TODO
+        GameObject propPrefab = PropDatabase.GetRandomProp(PropType.Random);
+        PropSettings propData = propPrefab.GetComponent<PropSettings>();
+
+        Vector3 size = propData.GetSize();
+        Quaternion randomRotation = Quaternion.Euler(0f, Random.Range(0, 360f), 0f);
+
+        if (PropExceedsRoom(true, size))
+        {
+            return;
+        }
+
+        float clamp = size.x / 2f;
+        Vector3 randomPosition = new(
+            Random.Range(LeftBound + clamp, RightBound - clamp),
+            Level,
+            Random.Range(BackBound + clamp, ForwardBound - clamp)
+        );
+
+        float halfExtent = size.x / 2f - Floats.OverlapThreshold;
+        int layerMask = LayerMask.GetMask(Layers.Prop);
+        Collider[] collisions = Physics.OverlapSphere(randomPosition, halfExtent, layerMask);
+
+        if (collisions.Length == 0)
+        {
+            InstantiateProp(propPrefab, randomPosition, randomRotation);
+            return;
+        }
+
+        if (!propData.PathBlocking && collisions.All(c => c.gameObject.CompareTag(Tags.Interior)))
+        {
+            InstantiateProp(propPrefab, randomPosition, randomRotation);
+        }
     }
 
     private void TryGenerateEdgeProp()

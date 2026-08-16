@@ -6,4 +6,5 @@
     public const float EqualityThreshold = 0.01f;
     public const float WallThickness = 0.1f;
     public const float MinimumDoorWidth = 0.5f;
+    public const float OverlapThreshold = 0.001f;
 }

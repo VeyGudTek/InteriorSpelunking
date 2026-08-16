@@ -18,5 +18,6 @@ MonoBehaviour:
   - {fileID: 8071730897571855276, guid: d09922750b09d824787c289462174b5b, type: 3}
   SupportingProps: []
   WallDecoration: []
-  RandomProps: []
+  RandomProps:
+  - {fileID: 8071730897571855276, guid: 624f90f299111c942b942a390461d7b1, type: 3}
   TableTopProps: []

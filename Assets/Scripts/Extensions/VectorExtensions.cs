@@ -8,6 +8,7 @@ public static class VectorExtensions
         Vector3 size = new(right - left, Floats.FreeSpaceHeight, forward - back);
         return (center, size);
     }
+
     public static (float left, float right, float forward, float back) GetBounds(Vector3 center, Vector3 size)
     {
         float leftBound = center.x - (size.x / 2f);
