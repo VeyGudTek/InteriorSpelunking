@@ -56,12 +56,14 @@ public class Props : MonoBehaviour
 
     private void TryGenerateProp()
     {
-        /* Implement Later
-        if (GeneratedProps.Select(p => p.HasSupporting).Any() && Random.value > SupportingPropChance)
+        List<PropSettings> propsWithSupports = GeneratedProps.Where(p => p.HasSupporting).ToList();
+        if (propsWithSupports.Count > 0 && Random.value > SupportingPropChance)
         {
-            TryGenerateSupportingProp();
+            GameObject supportProp = PropDatabase.GetRandomProp(PropType.Supporting);
+            int randomIndex = Random.Range(0, propsWithSupports.Count);
+            
+            propsWithSupports[randomIndex].TryGenerateSupport(supportProp, LeftBound, RightBound, ForwardBound, BackBound, TryInstantiateProp);
         }
-        */
 
         if (Random.value < RandomPropChance)
         {
@@ -74,11 +76,6 @@ public class Props : MonoBehaviour
         }
 
         TryGenerateCenterProp();
-    }
-
-    private void TryGenerateSupportingProp()
-    {
-        //TODO
     }
 
     private void TryGenerateRandomProp()
@@ -105,7 +102,7 @@ public class Props : MonoBehaviour
         int layerMask = LayerMask.GetMask(Layers.Prop);
         Collider[] collisions = Physics.OverlapSphere(randomPosition, halfExtent, layerMask);
 
-        TryInstantiateProp(collisions, propData, propPrefab, randomPosition, randomRotation);
+        TryInstantiateProp(collisions, propData, propPrefab, randomPosition, randomRotation, null);
     }
 
     private void TryGenerateEdgeProp()
@@ -143,7 +140,7 @@ public class Props : MonoBehaviour
         int layerMask = LayerMask.GetMask(Layers.Prop);
         Collider[] collisions = Physics.OverlapBox(newPosition, halfExtents, newRotation, layerMask);
 
-        TryInstantiateProp(collisions, propData, propPrefab, newPosition, newRotation);
+        TryInstantiateProp(collisions, propData, propPrefab, newPosition, newRotation, randomRoomSide.GetOpposite());
     }
 
     private void TryGenerateCenterProp()
@@ -174,7 +171,7 @@ public class Props : MonoBehaviour
         int layerMask = LayerMask.GetMask(Layers.Prop);
         Collider[] collisions = Physics.OverlapBox(randomPosition, halfExtents, randomRotation, layerMask);
 
-        TryInstantiateProp(collisions, propData, propPrefab, randomPosition, randomRotation);
+        TryInstantiateProp(collisions, propData, propPrefab, randomPosition, randomRotation, randomSide);
     }
 
     private bool PropExceedsRoom(bool isRotated, Vector3 propSize)
@@ -185,7 +182,7 @@ public class Props : MonoBehaviour
         return xSize > RightBound - LeftBound || zSize > ForwardBound - BackBound;
     }
 
-    private void TryInstantiateProp(Collider[] collisions, PropSettings propSettings, GameObject prop, Vector3 position, Quaternion rotation)
+    private void TryInstantiateProp(Collider[] collisions, PropSettings propSettings, GameObject prop, Vector3 position, Quaternion rotation, Side? orientation)
     {
         if (propSettings.PathBlocking && collisions.Any(c => c.gameObject.CompareTag(Tags.Interior)))
         {
@@ -200,7 +197,7 @@ public class Props : MonoBehaviour
         GameObject newProp = Instantiate(prop, transform);
         PropSettings newPropSettings = newProp.GetComponent<PropSettings>();
 
-        newPropSettings.SetPosition(rotation, position);
+        newPropSettings.SetPosition(rotation, position, orientation);
         GeneratedProps.Add(newPropSettings);
     }
 }
