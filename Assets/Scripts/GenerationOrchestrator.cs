@@ -13,6 +13,7 @@ public class GenerationOrchestrator : MonoBehaviour
         PropPathGeneration,
         PropPathInteriorGeneration,
         PropGeneration,
+        FloorAndCeilingGeneration,
         Finished
     }
 
@@ -33,6 +34,8 @@ public class GenerationOrchestrator : MonoBehaviour
     private PropPathInteriorGenerator PropPathInteriorGenerator;
     [SerializeField]
     private PropGenerator PropGenerator;
+    [SerializeField]
+    private FloorAndCeilingGenerator FloorAndCeilingGenerator;
 
     [Header("State")]
     [SerializeField]
@@ -67,6 +70,9 @@ public class GenerationOrchestrator : MonoBehaviour
                 break;
             case OrchestrationState.PropGeneration:
                 ProcessPropGeneration();
+                break;
+            case OrchestrationState.FloorAndCeilingGeneration:
+                ProcessFloorAndCeilingGeneration();
                 break;
             case OrchestrationState.Finished:
                 break;
@@ -176,6 +182,19 @@ public class GenerationOrchestrator : MonoBehaviour
             return;
         }
         if (PropGenerator.State == GenerationState.Completed)
+        {
+            State = OrchestrationState.FloorAndCeilingGeneration;
+        }
+    }
+
+    private void ProcessFloorAndCeilingGeneration()
+    {
+        if (FloorAndCeilingGenerator.State == GenerationState.Waiting)
+        {
+            FloorAndCeilingGenerator.StartFloorAndCeilingGeneration(GeneratedRooms);
+            return;
+        }
+        if (FloorAndCeilingGenerator.State == GenerationState.Completed)
         {
             State = OrchestrationState.Finished;
         }

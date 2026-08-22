@@ -5,7 +5,7 @@ using UnityEngine;
 public class Props : MonoBehaviour
 {
     const float EdgePropChance = 0.5f;
-    const float SupportingPropChance = 0.33f;
+    const float SupportingPropChance = 0.25f;
     const float RandomPropChance = 0.1f;
 
     [Header("References")]
@@ -103,7 +103,7 @@ public class Props : MonoBehaviour
 
         float halfExtent = size.x / 2f - Floats.OverlapThreshold;
         int layerMask = LayerMask.GetMask(Layers.Prop);
-        Collider[] collisions = Physics.OverlapSphere(randomPosition, halfExtent, layerMask);
+        Collider[] collisions = Physics.OverlapSphere(randomPosition - new Vector3(0f, size.y / 2f, 0f), halfExtent, layerMask);
 
         TryInstantiateProp(collisions, propData, propPrefab, randomPosition, randomRotation, null);
     }

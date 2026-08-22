@@ -13,6 +13,8 @@ public class Room : MonoBehaviour
     [SerializeField]
     private PropPathInterior PropPathInterior;
     public Props Props;
+    [SerializeField]
+    private FloorAndCeiling FloorAndCeiling;
 
     [Header("Dimensions")]
     public float LeftBound = 0f;
@@ -156,5 +158,10 @@ public class Room : MonoBehaviour
     public void StartPropGeneration()
     {
         Props.StartGeneration(LeftBound, RightBound, ForwardBound, BackwardBound, Level);
+    }
+
+    public void GenerateFloorAndCeiling()
+    {
+        FloorAndCeiling.GenerateFloorAndCeiling(LeftBound, RightBound, ForwardBound, BackwardBound, Level, Height);
     }
 }

@@ -2,10 +2,10 @@
 
 public static class VectorExtensions
 {
-    public static (Vector3 center, Vector3 size) ConvertToVector(float left, float right, float forward, float back, float level)
+    public static (Vector3 center, Vector3 size) ConvertToVector(float left, float right, float forward, float back, float centerY, float height)
     {
-        Vector3 center = new((left + right) / 2f, level, (forward + back) / 2f);
-        Vector3 size = new(right - left, Floats.FreeSpaceHeight, forward - back);
+        Vector3 center = new((left + right) / 2f, centerY, (forward + back) / 2f);
+        Vector3 size = new(right - left, height, forward - back);
         return (center, size);
     }
 

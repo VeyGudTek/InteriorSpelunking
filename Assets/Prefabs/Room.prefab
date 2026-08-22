@@ -160,6 +160,54 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &4926507862028880213
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6869123248243990544}
+  - component: {fileID: 4438374267677070725}
+  m_Layer: 0
+  m_Name: FloorAndCeiling
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6869123248243990544
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4926507862028880213}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6428633184146197407}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4438374267677070725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4926507862028880213}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85610546210ff5249a993f43ad996fbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FloorAndCeiling
+  Floor: {fileID: 8059510918330833848, guid: b69cfa7a6c6d4724fba17ce5e6464138, type: 3}
+  Ceiling: {fileID: 8059510918330833848, guid: b69cfa7a6c6d4724fba17ce5e6464138, type: 3}
+  FloorWidth: 0.5
+  CeilingWidth: 0.5
 --- !u!1 &4981271287407404960
 GameObject:
   m_ObjectHideFlags: 0
@@ -195,6 +243,7 @@ Transform:
   - {fileID: 263591547785008006}
   - {fileID: 7827185788358770175}
   - {fileID: 5564152649127636043}
+  - {fileID: 6869123248243990544}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6413214974878729709
@@ -214,6 +263,7 @@ MonoBehaviour:
   PropPath: {fileID: 4914450127158798242}
   PropPathInterior: {fileID: 421590060589761409}
   Props: {fileID: 6240655126172698503}
+  FloorAndCeiling: {fileID: 4438374267677070725}
   LeftBound: 0
   RightBound: 0
   ForwardBound: 0

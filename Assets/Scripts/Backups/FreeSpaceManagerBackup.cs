@@ -82,7 +82,7 @@ public class FreeSpaceManagerBackup : MonoBehaviour
         float clampedRight = originalRight;
         if (left > originalLeft)
         {
-            (Vector3 center, Vector3 size) = VectorExtensions.ConvertToVector(originalLeft, left, originalForward, originalBack, Level);
+            (Vector3 center, Vector3 size) = VectorExtensions.ConvertToVector(originalLeft, left, originalForward, originalBack, Level, Floats.FreeSpaceHeight);
             if (TryCreateFreeSpace(center, size, out GameObject freeSpace))
             {
                 newFreeSpaces.Add(freeSpace);
@@ -91,7 +91,7 @@ public class FreeSpaceManagerBackup : MonoBehaviour
         }
         if (right < originalRight)
         {
-            (Vector3 center, Vector3 size) = VectorExtensions.ConvertToVector(right, originalRight, originalForward, originalBack, Level);
+            (Vector3 center, Vector3 size) = VectorExtensions.ConvertToVector(right, originalRight, originalForward, originalBack, Level, Floats.FreeSpaceHeight);
             if (TryCreateFreeSpace(center, size, out GameObject freeSpace))
             {
                 newFreeSpaces.Add(freeSpace);
@@ -113,7 +113,7 @@ public class FreeSpaceManagerBackup : MonoBehaviour
 
         if (forward < originalForward)
         {
-            (Vector3 center, Vector3 size) = VectorExtensions.ConvertToVector(newLeft, newRight, originalForward, forward, Level);
+            (Vector3 center, Vector3 size) = VectorExtensions.ConvertToVector(newLeft, newRight, originalForward, forward, Level, Floats.FreeSpaceHeight);
 
             if (TryCreateFreeSpace(center, size, out GameObject freeSpace))
             {
@@ -122,7 +122,7 @@ public class FreeSpaceManagerBackup : MonoBehaviour
         }
         if (back > originalBack)
         {
-            (Vector3 center, Vector3 size) = VectorExtensions.ConvertToVector(newLeft, newRight, back, originalBack, Level);
+            (Vector3 center, Vector3 size) = VectorExtensions.ConvertToVector(newLeft, newRight, back, originalBack, Level, Floats.FreeSpaceHeight);
 
             if (TryCreateFreeSpace(center, size, out GameObject freeSpace))
             {
