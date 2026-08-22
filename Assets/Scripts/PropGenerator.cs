@@ -5,7 +5,7 @@ public class PropGenerator : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField]
-    private int BatchSize = 50;
+    private int BatchSize = 25;
 
     [Header("State")]
     public GenerationState State = GenerationState.Waiting;

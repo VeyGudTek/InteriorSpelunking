@@ -14,7 +14,9 @@ public class Props : MonoBehaviour
 
     [Header("State")]
     public GenerationState State = GenerationState.Waiting;
+    [SerializeField]
     private int CurrentAttempts = 0;
+    [SerializeField]
     private int MaxAttempts = 50;
 
     private List<PropSettings> GeneratedProps = new();
@@ -25,8 +27,9 @@ public class Props : MonoBehaviour
     private float BackBound;
     private float Level;
 
-    public void StartGeneration(float left, float right, float forward, float back, float level)
+    public void StartGeneration(float left, float right, float forward, float back, float level, float area)
     {
+        MaxAttempts = Mathf.RoundToInt(area * 0.35f);
         AssignProperties(left, right, forward, back, level);
 
         State = GenerationState.Generating;

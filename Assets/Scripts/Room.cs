@@ -157,7 +157,7 @@ public class Room : MonoBehaviour
 
     public void StartPropGeneration()
     {
-        Props.StartGeneration(LeftBound, RightBound, ForwardBound, BackwardBound, Level);
+        Props.StartGeneration(LeftBound, RightBound, ForwardBound, BackwardBound, Level, Length * Width);
     }
 
     public void GenerateFloorAndCeiling()
