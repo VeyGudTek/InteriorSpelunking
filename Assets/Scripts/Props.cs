@@ -57,22 +57,25 @@ public class Props : MonoBehaviour
     private void TryGenerateProp()
     {
         List<PropSettings> propsWithSupports = GeneratedProps.Where(p => p.HasSupporting).ToList();
-        if (propsWithSupports.Count > 0 && Random.value > SupportingPropChance)
+        if (propsWithSupports.Count > 0 && Random.value < SupportingPropChance)
         {
             GameObject supportProp = PropDatabase.GetRandomProp(PropType.Supporting);
             int randomIndex = Random.Range(0, propsWithSupports.Count);
             
             propsWithSupports[randomIndex].TryGenerateSupport(supportProp, LeftBound, RightBound, ForwardBound, BackBound, Level, TryInstantiateProp);
+            return;
         }
 
         if (Random.value < RandomPropChance)
         {
             TryGenerateRandomProp();
+            return;
         }
 
         if (Random.value < EdgePropChance)
         {
             TryGenerateEdgeProp();
+            return;
         }
 
         TryGenerateCenterProp();
