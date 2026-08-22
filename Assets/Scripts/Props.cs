@@ -91,7 +91,7 @@ public class Props : MonoBehaviour
             return;
         }
 
-        float clamp = size.x / 2f;
+        float clamp = (size.x / 2f) + (Floats.WallThickness / 2f);
         Vector3 randomPosition = new(
             Random.Range(LeftBound + clamp, RightBound - clamp),
             Level + size.y / 2f,
@@ -127,8 +127,8 @@ public class Props : MonoBehaviour
             _ => throw new System.ArgumentOutOfRangeException()
         };
         
-        float wallOffset = randomRoomSide.IsPositive() ? -propSize.z / 2f : propSize.z / 2f;
-        float horizontalRoomClamp = propSize.x / 2f;
+        float wallOffset = randomRoomSide.IsPositive() ? -(propSize.z / 2f) - (Floats.WallThickness / 2f) : (propSize.z / 2f) + (Floats.WallThickness / 2f);
+        float horizontalRoomClamp = (propSize.x / 2f) + (Floats.WallThickness / 2f);
         Vector3 newPosition = new Vector3(
             randomRoomSide.IsHorizontal() ? roomBoundValue + wallOffset : Random.Range(LeftBound + horizontalRoomClamp, RightBound - horizontalRoomClamp),
             Level + propSize.y / 2f,
@@ -161,6 +161,8 @@ public class Props : MonoBehaviour
 
         float xClamp = isHorizontalRotation ? size.z / 2f : size.x / 2f;
         float zClamp = isHorizontalRotation ? size.x / 2f : size.z / 2f;
+        xClamp += Floats.WallThickness / 2f;
+        zClamp += Floats.WallThickness / 2f;
         Vector3 randomPosition = new(
             Random.Range(LeftBound + xClamp, RightBound - xClamp),
             Level + size.y / 2f,
@@ -179,7 +181,7 @@ public class Props : MonoBehaviour
         float xSize = isRotated ? propSize.z : propSize.x;
         float zSize = isRotated ? propSize.x : propSize.z;
 
-        return xSize > RightBound - LeftBound || zSize > ForwardBound - BackBound;
+        return xSize > RightBound - LeftBound - Floats.WallThickness || zSize > ForwardBound - BackBound - Floats.WallThickness;
     }
 
     private void TryInstantiateProp(Collider[] collisions, PropSettings propSettings, GameObject prop, Vector3 position, Quaternion rotation, Side? orientation)

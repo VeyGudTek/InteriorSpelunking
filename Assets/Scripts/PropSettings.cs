@@ -86,10 +86,10 @@ public class PropSettings : MonoBehaviour
     {
         return propSide switch
         {
-            Side.Left => newPosition.x - newSize.z / 2f < roomLeft,
-            Side.Right => newPosition.x + newSize.z / 2f > roomRight,
-            Side.Forward => newPosition.z + newSize.z / 2f > roomForward,
-            Side.Back => newPosition.z - newSize.z / 2f < -roomBack,
+            Side.Left =>    newPosition.x - (newSize.z / 2f) - (Floats.WallThickness / 2f) < roomLeft,
+            Side.Right =>   newPosition.x + (newSize.z / 2f) + (Floats.WallThickness / 2f) > roomRight,
+            Side.Forward => newPosition.z + (newSize.z / 2f) + (Floats.WallThickness / 2f) > roomForward,
+            Side.Back =>    newPosition.z - (newSize.z / 2f) - (Floats.WallThickness / 2f) < roomBack,
             _ => throw new System.Exception("Invalid side")
         };
     }
