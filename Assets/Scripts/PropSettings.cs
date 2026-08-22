@@ -32,7 +32,7 @@ public class PropSettings : MonoBehaviour
         Visual.transform.rotation = rotation;
     }
 
-    public void TryGenerateSupport(GameObject supportPrefab, float roomLeft, float roomRight, float roomForward, float roomBack,
+    public void TryGenerateSupport(GameObject supportPrefab, float roomLeft, float roomRight, float roomForward, float roomBack, float level,
         Action<Collider[], PropSettings, GameObject, Vector3, Quaternion, Side?> tryInstantiatePropCallback
     )
     {
@@ -43,12 +43,13 @@ public class PropSettings : MonoBehaviour
 
         Vector3 supportSize = propData.GetSize();
         Vector3 currentCenter = Collider.transform.position;
+        float yOffset = level + (supportSize.y / 2f) - currentCenter.y;
         Vector3 centerPoint = randomSide switch
         {
-            Side.Left => currentCenter - new Vector3(horizontalOffset + supportSize.z / 2f, 0, 0),
-            Side.Right => currentCenter + new Vector3(horizontalOffset + supportSize.z / 2f, 0, 0),
-            Side.Forward => currentCenter + new Vector3(0, 0, verticalOffset + supportSize.z / 2f),
-            Side.Back => currentCenter - new Vector3(0, 0, verticalOffset + supportSize.z / 2f),
+            Side.Left =>    currentCenter + new Vector3(0f, yOffset, 0f) - new Vector3(horizontalOffset + supportSize.z / 2f, 0f, 0),
+            Side.Right =>   currentCenter + new Vector3(0f, yOffset, 0f) + new Vector3(horizontalOffset + supportSize.z / 2f, 0f, 0),
+            Side.Forward => currentCenter + new Vector3(0f, yOffset, 0f) + new Vector3(0, 0f, verticalOffset + supportSize.z / 2f),
+            Side.Back =>    currentCenter + new Vector3(0f, yOffset, 0f) - new Vector3(0, 0f, verticalOffset + supportSize.z / 2f),
             _ => throw new System.Exception("Invalid side")
         };
         Quaternion rotation = randomSide.GetOpposite().GetRotation();

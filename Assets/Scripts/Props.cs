@@ -62,7 +62,7 @@ public class Props : MonoBehaviour
             GameObject supportProp = PropDatabase.GetRandomProp(PropType.Supporting);
             int randomIndex = Random.Range(0, propsWithSupports.Count);
             
-            propsWithSupports[randomIndex].TryGenerateSupport(supportProp, LeftBound, RightBound, ForwardBound, BackBound, TryInstantiateProp);
+            propsWithSupports[randomIndex].TryGenerateSupport(supportProp, LeftBound, RightBound, ForwardBound, BackBound, Level, TryInstantiateProp);
         }
 
         if (Random.value < RandomPropChance)
@@ -94,7 +94,7 @@ public class Props : MonoBehaviour
         float clamp = size.x / 2f;
         Vector3 randomPosition = new(
             Random.Range(LeftBound + clamp, RightBound - clamp),
-            Level,
+            Level + size.y / 2f,
             Random.Range(BackBound + clamp, ForwardBound - clamp)
         );
 
@@ -131,7 +131,7 @@ public class Props : MonoBehaviour
         float horizontalRoomClamp = propSize.x / 2f;
         Vector3 newPosition = new Vector3(
             randomRoomSide.IsHorizontal() ? roomBoundValue + wallOffset : Random.Range(LeftBound + horizontalRoomClamp, RightBound - horizontalRoomClamp),
-            Level,
+            Level + propSize.y / 2f,
             randomRoomSide.IsHorizontal() ? Random.Range(BackBound + horizontalRoomClamp, ForwardBound - horizontalRoomClamp) : roomBoundValue + wallOffset
         );
 
@@ -163,7 +163,7 @@ public class Props : MonoBehaviour
         float zClamp = isHorizontalRotation ? size.x / 2f : size.z / 2f;
         Vector3 randomPosition = new(
             Random.Range(LeftBound + xClamp, RightBound - xClamp),
-            Level,
+            Level + size.y / 2f,
             Random.Range(BackBound + zClamp, ForwardBound - zClamp)
         );
 
